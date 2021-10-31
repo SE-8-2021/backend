@@ -33,7 +33,7 @@ public class SonarApiService {
 
     public List<CodeCoverageDTO> getSonarCodeCoverage(String component) throws IOException {
         String responseJson = Objects.requireNonNull(this.webClient.get()
-                        .uri("/measures/search_history?component=" + component + "&metrics=coverage")
+                        .uri("https://sonarcloud.io/api/measures/search_history?component=" + component + "&metrics=coverage")
                         .exchange()
                         .block())
                 .bodyToMono(String.class)
@@ -66,7 +66,7 @@ public class SonarApiService {
 
     public List<BugDTO> getSonarBug(String component) throws IOException {
         String responseJson = Objects.requireNonNull(this.webClient.get()
-                        .uri("/measures/search_history?component=" + component + "&metrics=bugs")
+                        .uri("https://sonarcloud.io/api/measures/search_history?component=" + component + "&metrics=bugs")
                         .exchange()
                         .block())
                 .bodyToMono(String.class)
@@ -98,7 +98,7 @@ public class SonarApiService {
 
     public List<CodeSmellDTO> getSonarCodeSmell(String component) throws IOException {
         String responseJson = Objects.requireNonNull(this.webClient.get()
-                        .uri("/measures/search_history?component=" + component + "&metrics=code_smells")
+                        .uri("https://sonarcloud.io/api/measures/search_history?component=" + component + "&metrics=code_smells")
                         .exchange()
                         .block())
                 .bodyToMono(String.class)
@@ -129,7 +129,7 @@ public class SonarApiService {
 
     public List<DuplicationDTO> getDuplication(String component) throws IOException {
         String responseJson = Objects.requireNonNull(this.webClient.get()
-                        .uri("/measures/search_history?component=" + component + "&metrics=duplicated_lines_density")
+                        .uri("https://sonarcloud.io/api/measures/search_history?component=" + component + "&metrics=duplicated_lines_density")
                         .exchange()
                         .block())
                 .bodyToMono(String.class)
