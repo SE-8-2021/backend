@@ -39,9 +39,4 @@ public class ProjectTest {
     public void getNameTest() {
         assertEquals("myProject", project.getName());
     }
-
-    @Test
-    public void getIsDeletedTest() {
-        //assertFalse(project.getIsDeleted());
-    }
 }
