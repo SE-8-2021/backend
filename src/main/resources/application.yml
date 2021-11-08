@@ -25,7 +25,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/PVS
     username: postgres
-    password: root
+    password: SE2021f
     driver-class-name: org.postgresql.Driver
   jpa:
     properties:
