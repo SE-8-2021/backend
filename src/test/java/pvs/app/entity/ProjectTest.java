@@ -30,7 +30,7 @@ public class ProjectTest {
     }
 
     @Test
-    public void getDeletedTest() {
+    public void default_of_deleted_Test() {
         assertFalse(myProject.getDeleted());
     }
 
