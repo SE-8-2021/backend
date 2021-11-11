@@ -33,4 +33,7 @@ public class Project {
             inverseJoinColumns = {@JoinColumn(name = "repository_id")}
     )
     private Set<Repository> repositorySet = new HashSet<>();
+
+    @Column(columnDefinition = "boolean default false")
+    private Boolean deleted;
 }

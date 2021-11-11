@@ -8,22 +8,35 @@ import org.springframework.test.context.junit4.SpringRunner;
 import pvs.app.Application;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 public class ProjectTest {
-    Project project;
+    Project myProject;
     final String testProjectName = "myProject";
 
     @Before
     public void setup() {
-        project = new Project();
-        project.setMemberId(1L);
-        project.setName(testProjectName);
+        myProject = new Project();
+        myProject.setMemberId(1L);
+        myProject.setName(testProjectName);
     }
 
     @Test
     public void getNameTest() {
-        assertEquals(testProjectName, project.getName());
+        assertEquals(testProjectName, myProject.getName());
+    }
+
+    @Test
+    public void getDeletedTest() {
+        assertFalse(myProject.getDeleted());
+    }
+
+    @Test
+    public void delete_myProject_Test() {
+        myProject.setDeleted(true);
+        assertTrue(myProject.getDeleted());
     }
 }
