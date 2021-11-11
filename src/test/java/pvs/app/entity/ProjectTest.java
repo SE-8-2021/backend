@@ -30,12 +30,12 @@ public class ProjectTest {
     }
 
     @Test
-    public void default_of_deleted_Test() {
+    public void defaultOfDeletedTest() {
         assertFalse(myProject.getDeleted());
     }
 
     @Test
-    public void delete_myProject_Test() {
+    public void deleteMyProjectTest() {
         myProject.setDeleted(true);
         assertTrue(myProject.getDeleted());
     }
