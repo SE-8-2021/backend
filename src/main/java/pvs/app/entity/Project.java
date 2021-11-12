@@ -34,6 +34,7 @@ public class Project {
     )
     private Set<Repository> repositorySet = new HashSet<>();
 
-    @Column(columnDefinition = "boolean default false")
-    private Boolean deleted;
+    // 0: deleted; 1: normal
+    @Column(columnDefinition = "integer default 1")
+    private Integer status;
 }

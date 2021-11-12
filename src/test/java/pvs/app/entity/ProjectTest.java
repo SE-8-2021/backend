@@ -8,14 +8,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import pvs.app.Application;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 public class ProjectTest {
     Project myProject;
     final String testProjectName = "myProject";
+    Integer defaultStatus = 1;
+    Integer deletedStatus = 0;
 
     @Before
     public void setup() {
@@ -30,13 +30,13 @@ public class ProjectTest {
     }
 
     @Test
-    public void defaultOfDeletedTest() {
-        assertFalse(myProject.getDeleted());
+    public void defaultOfStatusTest() {
+        assertEquals(defaultStatus, myProject.getStatus());
     }
 
     @Test
     public void deleteMyProjectTest() {
-        myProject.setDeleted(true);
-        assertTrue(myProject.getDeleted());
+        myProject.setStatus(deletedStatus);
+        assertEquals(deletedStatus, myProject.getStatus());
     }
 }
