@@ -19,17 +19,25 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import pvs.app.filter.JwtTokenFilter;
+import pvs.app.service.CustomOAuth2UserService;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     static final Logger logger = LogManager.getLogger(SecurityConfig.class.getName());
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final UserDetailsService userDetailsService;
 
-    @Qualifier("userDetailsServiceImpl")
-    @Autowired
-    private UserDetailsService userDetailsService;
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, @Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService) {
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) {
@@ -59,17 +67,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
-                .and().csrf().disable()
+        http.cors().and()
+                .csrf().disable()
                 //因為使用JWT，所以不需要HttpSession
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .authorizeRequests()
                 //OPTIONS請求全部放行
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 //登入介面放行
                 .antMatchers("/auth/login").permitAll()
+                .antMatchers("/oauth2/authorization/github").permitAll()
                 .antMatchers(HttpMethod.POST, "/member").permitAll()
-                .antMatchers("/project/**", "/github/**", "/sonar/**").hasAuthority("USER");
+                .antMatchers("/project/**", "/github/**", "/sonar/**").hasAuthority("USER")
+                .and()
+                .oauth2Login()
+                .loginPage("/auth/login")
+                .userInfoEndpoint().userService(customOAuth2UserService);
 
         //使用自定義的 Token過濾器 驗證請求的Token是否合法
         http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
@@ -90,5 +104,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3001"));
+        configuration.setAllowedMethods(List.of(HttpMethod.OPTIONS.toString()));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
