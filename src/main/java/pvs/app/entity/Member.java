@@ -22,6 +22,10 @@ public class Member implements UserDetails {
     @NotNull
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "auth_provider")
+    private AuthenticationProvider provider;
+
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "member_role",
