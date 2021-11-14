@@ -14,29 +14,29 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 public class ProjectTest {
-    Project myProject;
     final String testProjectName = "myProject";
+    Project givenProject;
 
     @Before
     public void setup() {
-        myProject = new Project();
-        myProject.setMemberId(1L);
-        myProject.setName(testProjectName);
+        givenProject = new Project();
+        givenProject.setMemberId(1L);
+        givenProject.setName(testProjectName);
     }
 
     @Test
     public void getNameTest() {
-        assertEquals(testProjectName, myProject.getName());
+        assertEquals(testProjectName, givenProject.getName());
     }
 
     @Test
     public void defaultOfRemovedStatusTest() {
-        assertFalse(myProject.isRemoved());
+        assertFalse(givenProject.isRemoved());
     }
 
     @Test
     public void removedProjectTest() {
-        myProject.setRemoved(true);
-        assertTrue(myProject.isRemoved());
+        givenProject.setRemoved(true);
+        assertTrue(givenProject.isRemoved());
     }
 }
