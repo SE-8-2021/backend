@@ -20,7 +20,6 @@ public class ProjectTest {
     @Before
     public void setup() {
         givenProject = new Project();
-        givenProject.setMemberId(1L);
         givenProject.setName(testProjectName);
     }
 
