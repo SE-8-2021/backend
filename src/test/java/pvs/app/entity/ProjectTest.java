@@ -24,17 +24,17 @@ public class ProjectTest {
     }
 
     @Test
-    public void getNameTest() {
+    public void correctlyGetProjectName() {
         assertEquals(testProjectName, givenProject.getName());
     }
 
     @Test
-    public void defaultOfRemovedStatusTest() {
+    public void removedShouldHaveDefaultValue() {
         assertFalse(givenProject.isRemoved());
     }
 
     @Test
-    public void removedProjectTest() {
+    public void setProjectAsRemoved() {
         givenProject.setRemoved(true);
         assertTrue(givenProject.isRemoved());
     }
