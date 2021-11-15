@@ -29,7 +29,7 @@ public class ProjectTest {
     }
 
     @Test
-    public void removedShouldHaveDefaultValue() {
+    public void removedAttributeShouldHaveDefaultValue() {
         assertFalse(givenProject.isRemoved());
     }
 
