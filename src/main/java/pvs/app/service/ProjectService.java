@@ -1,6 +1,7 @@
 package pvs.app.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.gitlab4j.api.GitLabApiException;
 import org.springframework.stereotype.Service;
 import pvs.app.dao.ProjectDAO;
 import pvs.app.dto.*;
@@ -16,13 +17,15 @@ import java.util.Optional;
 public class ProjectService {
     private final ProjectDAO projectDAO;
     private final GithubApiService githubApiService;
+    private final GitlabApiService gitlabApiService;
 
-    public ProjectService(ProjectDAO projectDAO, GithubApiService githubApiService) {
+    public ProjectService(ProjectDAO projectDAO, GithubApiService githubApiService, GitlabApiService gitlabApiService) {
         this.projectDAO = projectDAO;
         this.githubApiService = githubApiService;
+        this.gitlabApiService = gitlabApiService;
     }
 
-    public void create(CreateProjectDTO projectDTO) throws IOException {
+    public void create(CreateProjectDTO projectDTO) throws IOException, GitLabApiException {
         Project savedProject;
         Project project = new Project();
         project.setMemberId(1L);
@@ -34,6 +37,13 @@ public class ProjectService {
             addGithubRepositoryDTO.setProjectId(savedProject.getProjectId());
             addGithubRepositoryDTO.setRepositoryURL(projectDTO.getGithubRepositoryURL());
             addGithubRepo(addGithubRepositoryDTO);
+        }
+
+        if (!projectDTO.getGitlabRepositoryURL().equals("")) {
+            AddGitlabRepositoryDTO addGitlabRepositoryDTO = new AddGitlabRepositoryDTO();
+            addGitlabRepositoryDTO.setProjectId(savedProject.getProjectId());
+            addGitlabRepositoryDTO.setRepositoryURL(projectDTO.getGitlabRepositoryURL());
+            addGitlabRepo(addGitlabRepositoryDTO);
         }
 
         if (!projectDTO.getSonarRepositoryURL().equals("")) {
@@ -88,11 +98,33 @@ public class ProjectService {
             repository.setUrl(url);
             repository.setType("github");
             project.getRepositorySet().add(repository);
-            String owner = url.split("/")[3];
+            String owner = url.split("/")[3]; // Get gitHub project owner name by split project url
             JsonNode responseJson = githubApiService.getAvatarURL(owner);
             if (null != responseJson) {
                 String json = responseJson.textValue();
                 project.setAvatarURL(json);
+            }
+            projectDAO.save(project);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean addGitlabRepo(AddGitlabRepositoryDTO addGitlabRepositoryDTO) throws GitLabApiException {
+        Optional<Project> projectOptional = projectDAO.findById(addGitlabRepositoryDTO.getProjectId());
+        if (projectOptional.isPresent()) {
+            Project project = projectOptional.get();
+            String url = addGitlabRepositoryDTO.getRepositoryURL();
+            Repository repository = new Repository();
+            repository.setUrl(url);
+            repository.setType("gitlab");
+            project.getRepositorySet().add(repository);
+            String owner = url.split("/")[2];
+            String projectName = url.split("/")[3];
+            String responseURL = gitlabApiService.getAvatarURL(owner, projectName);
+            if (null != responseURL) {
+                project.setAvatarURL(responseURL);
             }
             projectDAO.save(project);
             return true;
