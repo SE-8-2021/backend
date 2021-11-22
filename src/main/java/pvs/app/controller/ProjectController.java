@@ -142,4 +142,11 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
         }
     }
+
+    // get the projects that are not removed
+    @GetMapping("/project/{memberId}")
+    public ResponseEntity<List<ResponseProjectDTO>> readMemberActiveProjects(@PathVariable Long memberId) {
+        List<ResponseProjectDTO> projectList = projectService.getMemberActiveProjects(memberId);
+        return ResponseEntity.status(HttpStatus.OK).body(projectList);
+    }
 }
