@@ -133,4 +133,13 @@ public class ProjectController {
         //         3        //
         //////////\\\\\\\\\\\\
     }
+
+    @PatchMapping("/project/{projectId}")
+    public ResponseEntity<String> removeProject(@PathVariable Long projectId) {
+        if (projectService.removeProjectById(projectId)) {
+            return ResponseEntity.status(HttpStatus.OK).body(successMessage);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
+        }
+    }
 }
