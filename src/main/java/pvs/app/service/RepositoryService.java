@@ -24,7 +24,6 @@ public class RepositoryService {
             return false;
         }
         String targetURL = url.replace("github.com", "api.github.com/repos");
-        AtomicBoolean result = new AtomicBoolean(false);
 
         this.webClient
                 .get()
@@ -34,8 +33,10 @@ public class RepositoryService {
 //                        result.set(clientResponse.statusCode().equals(HttpStatus.OK))
                         result.set(true)
                 )
+
                 .block();
-        return result.get();
+        // TODO: Check if we can get a successful response from the targetURL. To facilitate development, temporarily force it to be true.
+        return true;
     }
 
     public boolean checkGitlabURL(String url) {
@@ -43,21 +44,19 @@ public class RepositoryService {
     }
 
     public boolean checkSonarURL(String url) {
-        if (!url.contains("localhost")) {
+        if (!url.contains("sonarcloud.io")) {
             return false;
         }
 
-        String targetURL = url.replace("dashboard?id", "api/components/show?component");
+        String targetURL = url.replace("project/overview?id", "api/components/show?component");
         AtomicBoolean result = new AtomicBoolean(false);
 
         this.webClient
                 .get()
                 .uri(targetURL)
                 .exchange()
-                .doOnSuccess(clientResponse ->
-                        result.set(clientResponse.statusCode().equals(HttpStatus.OK))
-                )
                 .block();
-        return result.get();
+        // TODO: Check if we can get a successful response from the targetURL. To facilitate development, temporarily force it to be true.
+        return true;
     }
 }
