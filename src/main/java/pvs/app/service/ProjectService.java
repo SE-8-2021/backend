@@ -120,8 +120,8 @@ public class ProjectService {
             repository.setUrl(url);
             repository.setType("gitlab");
             project.getRepositorySet().add(repository);
-            String owner = url.split("/")[2];
-            String projectName = url.split("/")[3];
+            String owner = url.split("/")[3];
+            String projectName = url.split("/")[4];
             String responseURL = gitlabApiService.getAvatarURL(owner, projectName);
             if (null != responseURL) {
                 project.setAvatarURL(responseURL);

@@ -1,24 +1,16 @@
 package pvs.app.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.gitlab4j.api.*;
 import org.gitlab4j.api.models.Commit;
 import org.gitlab4j.api.models.CommitStats;
 import org.gitlab4j.api.models.Issue;
 import org.gitlab4j.api.models.Project;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import pvs.app.dto.GithubIssueDTO;
 import pvs.app.dto.GitlabIssueDTO;
-import pvs.app.service.thread.GithubCommitLoaderThread;
-import pvs.app.service.thread.GithubIssueLoaderThread;
 import pvs.app.service.thread.GitlabCommitLoaderThread;
 import pvs.app.service.thread.GitlabIssueLoaderThread;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -33,8 +25,7 @@ public class GitlabApiService {
     private boolean useToken = true;
 
     public GitlabApiService(WebClient.Builder webClientBuilder, GitlabCommitService gitlabCommitService) {
-        //        String token = System.getenv("PVS_GITLAB_TOKEN");
-        String token = "glpat-SAwLzPB3SsPxzhPU92PZ";
+        String token = System.getenv("PVS_GITLAB_TOKEN");
         if (useToken){
             this.gitLabApi = new GitLabApi("https://gitlab.com", Constants.TokenType.ACCESS, token);
         }
@@ -65,7 +56,9 @@ public class GitlabApiService {
     public Boolean getCommitsFromGitlab(String owner, String name) throws GitLabApiException, InterruptedException {
         CommitsApi commitsApi = this.gitLabApi.getCommitsApi();
         ProjectApi projectApi = this.gitLabApi.getProjectApi();
+        System.out.println(owner + " " + name);
         Project project = projectApi.getProject(owner, name);
+        System.out.println("test1");
         commits = commitsApi.getCommits(project.getId());
         if (commits.size() != 0){
             List<CommitStats> commitStats = new ArrayList<>();
@@ -104,8 +97,7 @@ public class GitlabApiService {
         IssuesApi issuesApi = this.gitLabApi.getIssuesApi();
         ProjectApi projectApi = this.gitLabApi.getProjectApi();
         Project project = projectApi.getProject(owner, name);
-        List<Issue> issues = new ArrayList<>();
-        issues = issuesApi.getIssues(project.getId());
+        List<Issue> issues = issuesApi.getIssues(project.getId());
 
         if (issues.size() != 0) {
             List<GitlabIssueLoaderThread> gitlabIssueLoaderThreadList = new ArrayList<>();
@@ -132,6 +124,8 @@ public class GitlabApiService {
 
     public String getAvatarURL(String owner, String projectName) throws GitLabApiException {
         if (this.gitLabApi != null){
+            System.out.println("AvatarURL owner: "+owner);
+            System.out.println("AvatarURL projectname: "+projectName);
             return this.gitLabApi.getProjectApi().getProject(owner, projectName).getOwner().getAvatarUrl();
         }
         return null;

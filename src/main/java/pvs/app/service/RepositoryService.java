@@ -39,22 +39,7 @@ public class RepositoryService {
     }
 
     public boolean checkGitlabURL(String url) {
-        if (!url.contains("gitlab.com")) {
-            return false;
-        }
-        String targetURL = url.replace("gitlab.com", "api.gitlab.com/repos");
-        AtomicBoolean result = new AtomicBoolean(false);
-
-        this.webClient
-                .get()
-                .uri(targetURL)
-                .exchange()
-                .doOnSuccess(clientResponse ->
-//                        result.set(clientResponse.statusCode().equals(HttpStatus.OK))
-                                result.set(true)
-                )
-                .block();
-        return result.get();
+        return url.contains("gitlab.com");
     }
 
     public boolean checkSonarURL(String url) {

@@ -5,16 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.gitlab4j.api.Constants;
-import org.gitlab4j.api.models.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
-import pvs.app.dto.GithubCommitDTO;
 import pvs.app.dto.GitlabCommitDTO;
 import pvs.app.dto.GitlabIssueDTO;
 import pvs.app.service.GitlabApiService;
@@ -41,7 +37,7 @@ public class GitlabApiController {
     }
 
     @SneakyThrows
-    @PostMapping("/gitlab/commits/{repoOwner}/{repoName}")
+    @GetMapping("/gitlab/commits/{repoOwner}/{repoName}")
     public ResponseEntity<String> getCommits(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) throws GitLabApiException {
         ObjectMapper objectMapper = new ObjectMapper();
         List<GitlabCommitDTO> gitlabCommitDTOs = gitlabCommitService.getAllCommits(repoOwner, repoName);
@@ -66,14 +62,14 @@ public class GitlabApiController {
         return ResponseEntity.status(HttpStatus.OK).body("log in succeed");
     }
 
-    @PostMapping("/gitlab/getRepo/{repoOwner}/{repoName}")
+    @PostMapping("/gitlab/commits/{repoOwner}/{repoName}")
     public ResponseEntity<String> getCommitsFromGitlab(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
         System.out.println("going to get commit from gitlab...");
         try{
             if(this.gitlabApiService.getCommitsFromGitlab(repoOwner, repoName)){
-                return ResponseEntity.status(HttpStatus.OK).body("get commit succeed");
+                return ResponseEntity.status(HttpStatus.OK).body("get commit from gitlab succeed");
             }else{
-                return ResponseEntity.status(HttpStatus.OK).body("get commit failed");
+                return ResponseEntity.status(HttpStatus.OK).body("get commit from gitlab failed");
             }
 
         }catch (InterruptedException | GitLabApiException e){
@@ -85,7 +81,7 @@ public class GitlabApiController {
 
     }
 
-    @PostMapping("/gitlab/issue/{repoOwner}/{repoName}")
+    @GetMapping("/gitlab/issues/{repoOwner}/{repoName}")
     public ResponseEntity<String> getIssuesFromGitlab(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
         System.out.println("going to get issue from gitlab...");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -94,10 +90,12 @@ public class GitlabApiController {
         try {
             gitlabIssueDTOs = gitlabApiService.getIssuesFromGitlab(repoOwner, repoName);
             if (null == gitlabIssueDTOs) {
+                System.out.println("test1");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("cannot get issue data");
             }
         } catch (InterruptedException | GitLabApiException e) {
+            System.out.println("test2");
             logger.debug(e.getMessage());
             e.printStackTrace();
             Thread.currentThread().interrupt();
@@ -110,6 +108,7 @@ public class GitlabApiController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(gitlabIssueDTOsJson);
         } catch (IOException e) {
+            System.out.println("test3");
             logger.debug(e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
