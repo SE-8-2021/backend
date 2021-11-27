@@ -102,9 +102,11 @@ public class ProjectService {
     }
 
     public boolean removeProjectById(Long projectId) {
-        final Optional<Project> projectToBeRemoved = projectDAO.findById(projectId);
-        if (projectToBeRemoved.isPresent()) {
-            projectToBeRemoved.get().setRemoved(true);
+        final Optional<Project> project = projectDAO.findById(projectId);
+        if (project.isPresent()) {
+            Project projectToBeRemoved = project.get();
+            projectToBeRemoved.setRemoved(true);
+            projectDAO.save(projectToBeRemoved);
             return true;
         } else {
             return false;
