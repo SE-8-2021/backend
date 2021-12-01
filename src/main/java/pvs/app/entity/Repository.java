@@ -22,4 +22,7 @@ public class Repository {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "repository")
     private Set<GithubCommit> githubCommitSet;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "repository")
+    private Set<GitlabCommit> gitlabCommitSet;
 }

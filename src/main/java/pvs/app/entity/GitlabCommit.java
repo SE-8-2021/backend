@@ -1,6 +1,6 @@
 package pvs.app.entity;
 
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -8,7 +8,10 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 public class GitlabCommit {
 
     @Id

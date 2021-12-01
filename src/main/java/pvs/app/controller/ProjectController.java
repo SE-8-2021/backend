@@ -41,27 +41,24 @@ public class ProjectController {
     public ResponseEntity<String> checkGithubURL(@RequestParam("url") String url) {
         if (repositoryService.checkGithubURL(url)) {
             return ResponseEntity.status(HttpStatus.OK).body(successMessage);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
         }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
     }
 
     @GetMapping("/repository/sonar/check")
     public ResponseEntity<String> checkSonarURL(@RequestParam("url") String url) {
         if (repositoryService.checkSonarURL(url)) {
             return ResponseEntity.status(HttpStatus.OK).body(successMessage);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
         }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
     }
 
     @GetMapping("/repository/gitlab/check")
     public ResponseEntity<String> checkGitlabURL(@RequestParam("url") String url) {
         if (repositoryService.checkGitlabURL(url)) {
             return ResponseEntity.status(HttpStatus.OK).body(successMessage);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
         }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
     }
 
     @PostMapping("/project")
@@ -82,12 +79,10 @@ public class ProjectController {
             if (repositoryService.checkSonarURL(addSonarRepositoryDTO.getRepositoryURL())) {
                 if (projectService.addSonarRepo(addSonarRepositoryDTO)) {
                     return ResponseEntity.status(HttpStatus.OK).body(successMessage);
-                } else {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);
                 }
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);
             }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
         } catch (Exception e) {
             e.printStackTrace();
             logger.debug(e.getMessage());

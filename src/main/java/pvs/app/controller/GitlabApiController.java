@@ -5,20 +5,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.gitlab4j.api.GitLabApiException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.gitlab4j.api.GitLabApiException;
 import pvs.app.dto.GitlabCommitDTO;
 import pvs.app.dto.GitlabIssueDTO;
 import pvs.app.service.GitlabApiService;
 import pvs.app.service.GitlabCommitService;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -31,7 +29,7 @@ public class GitlabApiController {
     @Value("${message.exception}")
     private String exceptionMessage;
 
-    public GitlabApiController(GitlabApiService gitlabApiService, GitlabCommitService gitlabCommitService){
+    public GitlabApiController(GitlabApiService gitlabApiService, GitlabCommitService gitlabCommitService) {
         this.gitlabApiService = gitlabApiService;
         this.gitlabCommitService = gitlabCommitService;
     }
@@ -41,10 +39,9 @@ public class GitlabApiController {
     public ResponseEntity<String> getCommits(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) throws GitLabApiException {
         ObjectMapper objectMapper = new ObjectMapper();
         List<GitlabCommitDTO> gitlabCommitDTOs = gitlabCommitService.getAllCommits(repoOwner, repoName);
-        String gitlabCommitDTOsJson;
 
         try {
-            gitlabCommitDTOsJson = objectMapper.writeValueAsString(gitlabCommitDTOs);
+            String gitlabCommitDTOsJson = objectMapper.writeValueAsString(gitlabCommitDTOs);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(gitlabCommitDTOsJson);
         } catch (JsonProcessingException e) {
@@ -55,8 +52,9 @@ public class GitlabApiController {
         }
     }
 
+    @SneakyThrows
     @PostMapping("/gitlab/{username}/{password}")
-    public ResponseEntity<String> oauth2login(@PathVariable("username") String username, @PathVariable("password") String password) throws GitLabApiException {
+    public ResponseEntity<String> oauth2login(@PathVariable("username") String username, @PathVariable("password") String password) {
         System.out.println("going to execute gitlab api..");
         this.gitlabApiService.oauth2login(username, password);
         return ResponseEntity.status(HttpStatus.OK).body("log in succeed");
@@ -65,14 +63,14 @@ public class GitlabApiController {
     @PostMapping("/gitlab/commits/{repoOwner}/{repoName}")
     public ResponseEntity<String> getCommitsFromGitlab(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
         System.out.println("going to get commit from gitlab...");
-        try{
-            if(this.gitlabApiService.getCommitsFromGitlab(repoOwner, repoName)){
+        try {
+            if (this.gitlabApiService.getCommitsFromGitlab(repoOwner, repoName)) {
                 return ResponseEntity.status(HttpStatus.OK).body("get commit from gitlab succeed");
-            }else{
+            } else {
                 return ResponseEntity.status(HttpStatus.OK).body("get commit from gitlab failed");
             }
 
-        }catch (InterruptedException | GitLabApiException e){
+        } catch (InterruptedException | GitLabApiException e) {
             logger.debug(e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -89,13 +87,7 @@ public class GitlabApiController {
 
         try {
             gitlabIssueDTOs = gitlabApiService.getIssuesFromGitlab(repoOwner, repoName);
-            if (null == gitlabIssueDTOs) {
-                System.out.println("test1");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("cannot get issue data");
-            }
         } catch (InterruptedException | GitLabApiException e) {
-            System.out.println("test2");
             logger.debug(e.getMessage());
             e.printStackTrace();
             Thread.currentThread().interrupt();
@@ -104,16 +96,17 @@ public class GitlabApiController {
         }
 
         try {
-            String gitlabIssueDTOsJson = objectMapper.writeValueAsString(gitlabIssueDTOs);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(gitlabIssueDTOsJson);
+            if (null != gitlabIssueDTOs) {
+                String gitlabIssueDTOsJson = objectMapper.writeValueAsString(gitlabIssueDTOs);
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(gitlabIssueDTOsJson);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body("no issue data");
         } catch (IOException e) {
-            System.out.println("test3");
             logger.debug(e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(exceptionMessage);
         }
-
     }
 }
