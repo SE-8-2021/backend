@@ -51,6 +51,7 @@ public class GitlabCommitService {
         return githubCommitDTOs;
     }
 
+    //use for testing
     public GitlabCommitDTO getLastCommit(String repoOwner, String repoName) {
         GitlabCommit gitlabCommit = gitlabCommitDAO.findFirstByRepoOwnerAndRepoNameOrderByCommittedDateDesc(repoOwner, repoName);
         if (null == gitlabCommit) {
