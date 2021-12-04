@@ -139,7 +139,7 @@ public class ProjectController {
         if (projectService.removeProjectById(projectId)) {
             return ResponseEntity.status(HttpStatus.OK).body(successMessage);
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);
         }
     }
 
