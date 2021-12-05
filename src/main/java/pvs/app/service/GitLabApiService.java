@@ -7,20 +7,20 @@ import org.gitlab4j.api.models.Issue;
 import org.gitlab4j.api.models.Project;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import pvs.app.dto.GitlabIssueDTO;
-import pvs.app.service.thread.GitlabCommitLoaderThread;
-import pvs.app.service.thread.GitlabIssueLoaderThread;
+import pvs.app.dto.GitLabIssueDTO;
+import pvs.app.service.thread.GitLabCommitLoaderThread;
+import pvs.app.service.thread.GitLabIssueLoaderThread;
 import reactor.util.annotation.Nullable;
 
 import java.util.*;
 
 @Service
-public class GitlabApiService {
+public class GitLabApiService {
 
-    private final GitlabCommitService gitlabCommitService;
+    private final GitLabCommitService gitlabCommitService;
     private GitLabApi gitLabApi;
 
-    public GitlabApiService(WebClient.Builder webClientBuilder, GitlabCommitService gitlabCommitService) {
+    public GitLabApiService(WebClient.Builder webClientBuilder, GitLabCommitService gitlabCommitService) {
         String token = System.getenv("PVS_GITLAB_TOKEN");
         this.gitLabApi = new GitLabApi("https://gitlab.com", Constants.TokenType.ACCESS, token);
         this.gitlabCommitService = gitlabCommitService;
@@ -53,11 +53,11 @@ public class GitlabApiService {
             commitStats.add(commitsApi.getCommit(project.getId(),commit.getId()).getStats());
         }
 
-        List<GitlabCommitLoaderThread> gitlabCommitLoaderThreadList = new ArrayList<>();
+        List<GitLabCommitLoaderThread> gitLabCommitLoaderThreadList = new ArrayList<>();
 
         for (int i = 0; i < commits.size(); i++) {
-            GitlabCommitLoaderThread gitlabCommitLoaderThread =
-                    new GitlabCommitLoaderThread(
+            GitLabCommitLoaderThread gitlabCommitLoaderThread =
+                    new GitLabCommitLoaderThread(
                             this.gitlabCommitService,
                             owner, // repoOwner
                             name,  // repoName
@@ -65,19 +65,19 @@ public class GitlabApiService {
                             commitStats.get(i),  // commit stats
                             commitsApi.getDiff(project.getId(), commits.get(i).getId()).size() // changeFileCount
                     );
-            gitlabCommitLoaderThreadList.add(gitlabCommitLoaderThread);
+            gitLabCommitLoaderThreadList.add(gitlabCommitLoaderThread);
             gitlabCommitLoaderThread.start();
         }
 
-        for (GitlabCommitLoaderThread thread : gitlabCommitLoaderThreadList) {
+        for (GitLabCommitLoaderThread thread : gitLabCommitLoaderThreadList) {
             thread.join();
         }
         return true;
     }
 
     @Nullable
-    public List<GitlabIssueDTO> getIssuesFromGitlab(String owner, String name) throws GitLabApiException, InterruptedException{
-        List<GitlabIssueDTO> gitlabIssueDTOList = new ArrayList<>();
+    public List<GitLabIssueDTO> getIssuesFromGitlab(String owner, String name) throws GitLabApiException, InterruptedException{
+        List<GitLabIssueDTO> gitLabIssueDTOList = new ArrayList<>();
         IssuesApi issuesApi = this.gitLabApi.getIssuesApi();
         ProjectApi projectApi = this.gitLabApi.getProjectApi();
         Project project = projectApi.getProject(owner, name);
@@ -85,24 +85,24 @@ public class GitlabApiService {
 
         if (issues.size() == 0) return null;
 
-        final List<GitlabIssueLoaderThread> gitlabIssueLoaderThreadList = new ArrayList<>();
+        final List<GitLabIssueLoaderThread> gitLabIssueLoaderThreadList = new ArrayList<>();
 
         for (final Issue issue : issues) {
-            final GitlabIssueLoaderThread gitlabIssueLoaderThread =
-                    new GitlabIssueLoaderThread(
-                            gitlabIssueDTOList,
+            final GitLabIssueLoaderThread gitlabIssueLoaderThread =
+                    new GitLabIssueLoaderThread(
+                            gitLabIssueDTOList,
                             owner,
                             name,
                             issue);
-            gitlabIssueLoaderThreadList.add(gitlabIssueLoaderThread);
+            gitLabIssueLoaderThreadList.add(gitlabIssueLoaderThread);
             gitlabIssueLoaderThread.start();
         }
 
-        for (final GitlabIssueLoaderThread thread : gitlabIssueLoaderThreadList) {
+        for (final GitLabIssueLoaderThread thread : gitLabIssueLoaderThreadList) {
             thread.join();
         }
 
-        return gitlabIssueDTOList;
+        return gitLabIssueDTOList;
     }
 
     @Nullable

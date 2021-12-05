@@ -11,9 +11,9 @@ import java.util.Date;
 import java.util.Optional;
 
 @Data
-public class GitlabCommitDTO {
+public class GitLabCommitDTO {
 
-    static final Logger logger = LogManager.getLogger(GitlabCommitDTO.class.getName());
+    static final Logger logger = LogManager.getLogger(GitLabCommitDTO.class.getName());
 
     private String repoOwner;
     private String repoName;

@@ -1,21 +1,21 @@
 package pvs.app.service.thread;
 
 import org.gitlab4j.api.models.Issue;
-import pvs.app.dto.GitlabIssueDTO;
+import pvs.app.dto.GitLabIssueDTO;
 
 import java.util.List;
 
-public class GitlabIssueLoaderThread extends Thread {
+public class GitLabIssueLoaderThread extends Thread {
 
     private static final Object lock = new Object();
-    private final List<GitlabIssueDTO> gitlabIssueDTOList;
+    private final List<GitLabIssueDTO> gitLabIssueDTOList;
     private final String repoOwner;
     private final String repoName;
     private final Issue issue;
 
 
-    public GitlabIssueLoaderThread(List<GitlabIssueDTO> gitlabIssueDTOList, String repoOwner, String repoName, Issue issue) {
-        this.gitlabIssueDTOList = gitlabIssueDTOList;
+    public GitLabIssueLoaderThread(List<GitLabIssueDTO> gitLabIssueDTOList, String repoOwner, String repoName, Issue issue) {
+        this.gitLabIssueDTOList = gitLabIssueDTOList;
         this.repoOwner = repoOwner;
         this.repoName = repoName;
         this.issue = issue;
@@ -23,14 +23,14 @@ public class GitlabIssueLoaderThread extends Thread {
 
     @Override
     public void run() {
-        GitlabIssueDTO gitlabIssueDTO = new GitlabIssueDTO();
+        GitLabIssueDTO gitlabIssueDTO = new GitLabIssueDTO();
         gitlabIssueDTO.setRepoOwner(repoOwner);
         gitlabIssueDTO.setRepoName(repoName);
         gitlabIssueDTO.setCreatedAt(issue.getCreatedAt());
         gitlabIssueDTO.setClosedAt(issue.getClosedAt());
 
         synchronized (lock) {
-            gitlabIssueDTOList.add(gitlabIssueDTO);
+            gitLabIssueDTOList.add(gitlabIssueDTO);
         }
     }
 }

@@ -7,7 +7,7 @@ import pvs.app.entity.GitlabCommit;
 import java.util.List;
 
 @Repository
-public interface GitlabCommitDAO extends CrudRepository<GitlabCommit, Long> {
+public interface GitLabCommitDAO extends CrudRepository<GitlabCommit, Long> {
     List<GitlabCommit> findByRepoOwnerAndRepoName(String repoOwner, String repoName);
 
     GitlabCommit findFirstByRepoOwnerAndRepoNameOrderByCommittedDateDesc(String repoOwner, String repoName);

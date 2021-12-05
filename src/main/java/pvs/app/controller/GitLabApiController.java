@@ -11,25 +11,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pvs.app.dto.GitlabCommitDTO;
-import pvs.app.dto.GitlabIssueDTO;
-import pvs.app.service.GitlabApiService;
-import pvs.app.service.GitlabCommitService;
+import pvs.app.dto.GitLabCommitDTO;
+import pvs.app.dto.GitLabIssueDTO;
+import pvs.app.service.GitLabApiService;
+import pvs.app.service.GitLabCommitService;
 
 import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-public class GitlabApiController {
+public class GitLabApiController {
 
-    static final Logger logger = LogManager.getLogger(GithubApiController.class.getName());
-    private final GitlabApiService gitlabApiService;
-    private final GitlabCommitService gitlabCommitService;
+    static final Logger logger = LogManager.getLogger(GitLabApiController.class.getName());
+    private final GitLabApiService gitlabApiService;
+    private final GitLabCommitService gitlabCommitService;
     @Value("${message.exception}")
     private String exceptionMessage;
 
-    public GitlabApiController(GitlabApiService gitlabApiService, GitlabCommitService gitlabCommitService) {
+    public GitLabApiController(GitLabApiService gitlabApiService, GitLabCommitService gitlabCommitService) {
         this.gitlabApiService = gitlabApiService;
         this.gitlabCommitService = gitlabCommitService;
     }
@@ -38,10 +38,10 @@ public class GitlabApiController {
     @GetMapping("/gitlab/commits/{repoOwner}/{repoName}")
     public ResponseEntity<String> getCommits(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) throws GitLabApiException {
         ObjectMapper objectMapper = new ObjectMapper();
-        List<GitlabCommitDTO> gitlabCommitDTOs = gitlabCommitService.getAllCommits(repoOwner, repoName);
+        List<GitLabCommitDTO> gitLabCommitDTOS = gitlabCommitService.getAllCommits(repoOwner, repoName);
 
         try {
-            String gitlabCommitDTOsJson = objectMapper.writeValueAsString(gitlabCommitDTOs);
+            String gitlabCommitDTOsJson = objectMapper.writeValueAsString(gitLabCommitDTOS);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(gitlabCommitDTOsJson);
         } catch (JsonProcessingException e) {
@@ -61,7 +61,7 @@ public class GitlabApiController {
     }
 
     @PostMapping("/gitlab/commits/{repoOwner}/{repoName}")
-    public ResponseEntity<String> getCommitsFromGitlab(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
+    public ResponseEntity<String> getCommitsFromGitLab(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
         System.out.println("going to get commit from gitlab...");
         try {
             if (this.gitlabApiService.getCommitsFromGitlab(repoOwner, repoName)) {
@@ -80,13 +80,13 @@ public class GitlabApiController {
     }
 
     @GetMapping("/gitlab/issues/{repoOwner}/{repoName}")
-    public ResponseEntity<String> getIssuesFromGitlab(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
+    public ResponseEntity<String> getIssuesFromGitLab(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
         System.out.println("going to get issue from gitlab...");
         ObjectMapper objectMapper = new ObjectMapper();
-        List<GitlabIssueDTO> gitlabIssueDTOs;
+        List<GitLabIssueDTO> gitLabIssueDTOS;
 
         try {
-            gitlabIssueDTOs = gitlabApiService.getIssuesFromGitlab(repoOwner, repoName);
+            gitLabIssueDTOS = gitlabApiService.getIssuesFromGitlab(repoOwner, repoName);
         } catch (InterruptedException | GitLabApiException e) {
             logger.debug(e.getMessage());
             e.printStackTrace();
@@ -96,8 +96,8 @@ public class GitlabApiController {
         }
 
         try {
-            if (null != gitlabIssueDTOs) {
-                String gitlabIssueDTOsJson = objectMapper.writeValueAsString(gitlabIssueDTOs);
+            if (null != gitLabIssueDTOS) {
+                String gitlabIssueDTOsJson = objectMapper.writeValueAsString(gitLabIssueDTOS);
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(gitlabIssueDTOsJson);
             }

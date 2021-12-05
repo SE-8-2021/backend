@@ -8,7 +8,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import java.util.Date;
 
 @Data
-public class GitlabIssueDTO {
+public class GitLabIssueDTO {
     private String repoOwner;
     private String repoName;
     private Date createdAt;

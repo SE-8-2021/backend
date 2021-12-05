@@ -3,22 +3,22 @@ package pvs.app.service.thread;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.gitlab4j.api.models.CommitStats;
 import org.gitlab4j.api.utils.JacksonJson;
-import pvs.app.dto.GitlabCommitDTO;
-import pvs.app.service.GitlabCommitService;
+import pvs.app.dto.GitLabCommitDTO;
+import pvs.app.service.GitLabCommitService;
 
 import java.io.IOException;
 import java.util.Optional;
 
-public class GitlabCommitLoaderThread extends Thread {
+public class GitLabCommitLoaderThread extends Thread {
 
     private static final Object lock = new Object();
-    private final GitlabCommitService gitlabCommitService;
+    private final GitLabCommitService gitlabCommitService;
     private final String repoOwner, repoName;
     private final String responseJson;
     private final CommitStats commitStats;
     private final Integer changeFileCount;
 
-    public GitlabCommitLoaderThread(GitlabCommitService githubCommitService, String repoOwner, String repoName, String responseJson, CommitStats commitStats, Integer changeFileCount) {
+    public GitLabCommitLoaderThread(GitLabCommitService githubCommitService, String repoOwner, String repoName, String responseJson, CommitStats commitStats, Integer changeFileCount) {
         this.gitlabCommitService = githubCommitService;
         this.repoOwner = repoOwner;
         this.repoName = repoName;
@@ -34,7 +34,7 @@ public class GitlabCommitLoaderThread extends Thread {
         try {
             JsonNode commitJsonNode = jacksonJson.readTree(responseJson);
 
-            GitlabCommitDTO gitlabCommitDTO = new GitlabCommitDTO();
+            GitLabCommitDTO gitlabCommitDTO = new GitLabCommitDTO();
             gitlabCommitDTO.setRepoOwner(repoOwner);
             gitlabCommitDTO.setRepoName(repoName);
             gitlabCommitDTO.setAuthorName(String.valueOf(commitJsonNode.get("authorName")));

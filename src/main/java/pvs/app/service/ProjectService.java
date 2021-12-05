@@ -17,9 +17,9 @@ import java.util.Optional;
 public class ProjectService {
     private final ProjectDAO projectDAO;
     private final GithubApiService githubApiService;
-    private final GitlabApiService gitlabApiService;
+    private final GitLabApiService gitlabApiService;
 
-    public ProjectService(ProjectDAO projectDAO, GithubApiService githubApiService, GitlabApiService gitlabApiService) {
+    public ProjectService(ProjectDAO projectDAO, GithubApiService githubApiService, GitLabApiService gitlabApiService) {
         this.projectDAO = projectDAO;
         this.githubApiService = githubApiService;
         this.gitlabApiService = gitlabApiService;
@@ -40,7 +40,7 @@ public class ProjectService {
         }
 
         if (!projectDTO.getGitlabRepositoryURL().trim().equals("")) {
-            AddGitlabRepositoryDTO addGitlabRepositoryDTO = new AddGitlabRepositoryDTO();
+            AddGitLabRepositoryDTO addGitlabRepositoryDTO = new AddGitLabRepositoryDTO();
             addGitlabRepositoryDTO.setProjectId(savedProject.getProjectId());
             addGitlabRepositoryDTO.setRepositoryURL(projectDTO.getGitlabRepositoryURL());
             addGitlabRepo(addGitlabRepositoryDTO);
@@ -107,7 +107,7 @@ public class ProjectService {
         return true;
     }
 
-    public boolean addGitlabRepo(AddGitlabRepositoryDTO addGitlabRepositoryDTO) throws GitLabApiException {
+    public boolean addGitlabRepo(AddGitLabRepositoryDTO addGitlabRepositoryDTO) throws GitLabApiException {
         Optional<Project> projectOptional = projectDAO.findById(addGitlabRepositoryDTO.getProjectId());
         if (projectOptional.isEmpty()) return false;
 

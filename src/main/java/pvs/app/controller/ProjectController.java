@@ -38,7 +38,7 @@ public class ProjectController {
     }
 
     @GetMapping("/repository/github/check")
-    public ResponseEntity<String> checkGithubURL(@RequestParam("url") String url) {
+    public ResponseEntity<String> checkGitHubURL(@RequestParam("url") String url) {
         if (repositoryService.checkGithubURL(url)) {
             return ResponseEntity.status(HttpStatus.OK).body(successMessage);
         }
@@ -54,7 +54,7 @@ public class ProjectController {
     }
 
     @GetMapping("/repository/gitlab/check")
-    public ResponseEntity<String> checkGitlabURL(@RequestParam("url") String url) {
+    public ResponseEntity<String> checkGitLabURL(@RequestParam("url") String url) {
         if (repositoryService.checkGitlabURL(url)) {
             return ResponseEntity.status(HttpStatus.OK).body(successMessage);
         }
@@ -91,7 +91,7 @@ public class ProjectController {
     }
 
     @PostMapping("/project/{projectId}/repository/github")
-    public ResponseEntity<String> addGithubRepository(@RequestBody AddGithubRepositoryDTO addGithubRepositoryDTO) {
+    public ResponseEntity<String> addGitHubRepository(@RequestBody AddGithubRepositoryDTO addGithubRepositoryDTO) {
         try {
             if (repositoryService.checkGithubURL(addGithubRepositoryDTO.getRepositoryURL())) {
                 if (projectService.addGithubRepo(addGithubRepositoryDTO)) {
@@ -108,7 +108,7 @@ public class ProjectController {
     }
 
     @PostMapping("/project/{projectId}/repository/gitlab")
-    public ResponseEntity<String> addGitlabRepository(@RequestBody AddGitlabRepositoryDTO addGitlabRepositoryDTO) {
+    public ResponseEntity<String> addGitLabRepository(@RequestBody AddGitLabRepositoryDTO addGitlabRepositoryDTO) {
         try {
             if (repositoryService.checkGitlabURL(addGitlabRepositoryDTO.getRepositoryURL())) {
                 if (projectService.addGitlabRepo(addGitlabRepositoryDTO)) {
