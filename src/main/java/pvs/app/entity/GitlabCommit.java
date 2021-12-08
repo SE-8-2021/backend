@@ -45,6 +45,7 @@ public class GitlabCommit {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "repository_id")
+    @ToString.Exclude
     private Repository repository;
 
     @Override

@@ -1,6 +1,6 @@
 package pvs.app.entity;
 
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -8,7 +8,10 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 public class GithubCommit {
 
     @Id
@@ -42,6 +45,7 @@ public class GithubCommit {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "repository_id")
+    @ToString.Exclude
     private Repository repository;
 
     @Override
