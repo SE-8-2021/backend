@@ -1,13 +1,14 @@
 package pvs.app.dto;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import lombok.Data;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class GitLabIssueDTO {
     private String repoOwner;
     private String repoName;

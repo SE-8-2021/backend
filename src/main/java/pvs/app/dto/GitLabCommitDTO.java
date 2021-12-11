@@ -1,7 +1,7 @@
 package pvs.app.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import lombok.Data;
+import lombok.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.format.DateTimeFormatter;
@@ -10,7 +10,9 @@ import org.joda.time.format.ISODateTimeFormat;
 import java.util.Date;
 import java.util.Optional;
 
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class GitLabCommitDTO {
 
     static final Logger logger = LogManager.getLogger(GitLabCommitDTO.class.getName());

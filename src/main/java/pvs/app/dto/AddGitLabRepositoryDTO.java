@@ -1,8 +1,12 @@
 package pvs.app.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class AddGitLabRepositoryDTO {
     private Long projectId;
     private String repositoryURL;
