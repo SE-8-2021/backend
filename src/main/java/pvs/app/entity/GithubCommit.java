@@ -8,10 +8,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
+@Data
 public class GithubCommit {
 
     @Id
@@ -45,7 +42,6 @@ public class GithubCommit {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "repository_id")
-    @ToString.Exclude
     private Repository repository;
 
     @Override
