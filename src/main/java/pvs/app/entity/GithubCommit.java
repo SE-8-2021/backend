@@ -1,6 +1,6 @@
 package pvs.app.entity;
 
-import lombok.*;
+import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

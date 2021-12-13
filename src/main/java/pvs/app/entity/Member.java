@@ -1,6 +1,6 @@
 package pvs.app.entity;
 
-import lombok.*;
+import lombok.Data;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
