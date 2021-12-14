@@ -2,6 +2,7 @@ package pvs.app.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.gitlab4j.api.GitLabApiException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,7 +65,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void create() throws IOException {
+    public void create() throws IOException, GitLabApiException {
         //context
         when(githubApiService.getAvatarURL("facebook"))
                 .thenReturn(mockAvatar.orElse(null));

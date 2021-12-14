@@ -1,6 +1,7 @@
 package pvs.app.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.gitlab4j.api.GitLabApiException;
 import org.springframework.stereotype.Service;
 import pvs.app.dao.ProjectDAO;
 import pvs.app.dto.*;
@@ -16,27 +17,36 @@ import java.util.Optional;
 public class ProjectService {
     private final ProjectDAO projectDAO;
     private final GithubApiService githubApiService;
+    private final GitLabApiService gitlabApiService;
 
-    public ProjectService(ProjectDAO projectDAO, GithubApiService githubApiService) {
+    public ProjectService(ProjectDAO projectDAO, GithubApiService githubApiService, GitLabApiService gitlabApiService) {
         this.projectDAO = projectDAO;
         this.githubApiService = githubApiService;
+        this.gitlabApiService = gitlabApiService;
     }
 
-    public void create(CreateProjectDTO projectDTO) throws IOException {
+    public void create(CreateProjectDTO projectDTO) throws IOException, GitLabApiException {
         Project savedProject;
         Project project = new Project();
         project.setMemberId(1L);
         project.setName(projectDTO.getProjectName());
         savedProject = projectDAO.save(project);
 
-        if (!projectDTO.getGithubRepositoryURL().equals("")) {
+        if (!projectDTO.getGithubRepositoryURL().trim().equals("")) {
             AddGithubRepositoryDTO addGithubRepositoryDTO = new AddGithubRepositoryDTO();
             addGithubRepositoryDTO.setProjectId(savedProject.getProjectId());
             addGithubRepositoryDTO.setRepositoryURL(projectDTO.getGithubRepositoryURL());
             addGithubRepo(addGithubRepositoryDTO);
         }
 
-        if (!projectDTO.getSonarRepositoryURL().equals("")) {
+        if (!projectDTO.getGitlabRepositoryURL().trim().equals("")) {
+            AddGitLabRepositoryDTO addGitlabRepositoryDTO = new AddGitLabRepositoryDTO();
+            addGitlabRepositoryDTO.setProjectId(savedProject.getProjectId());
+            addGitlabRepositoryDTO.setRepositoryURL(projectDTO.getGitlabRepositoryURL());
+            addGitlabRepo(addGitlabRepositoryDTO);
+        }
+
+        if (!projectDTO.getSonarRepositoryURL().trim().equals("")) {
             AddSonarRepositoryDTO addSonarRepositoryDTO = new AddSonarRepositoryDTO();
             addSonarRepositoryDTO.setProjectId(savedProject.getProjectId());
             addSonarRepositoryDTO.setRepositoryURL(projectDTO.getSonarRepositoryURL());
@@ -66,39 +76,55 @@ public class ProjectService {
 
     public boolean addSonarRepo(AddSonarRepositoryDTO addSonarRepositoryDTO) {
         Optional<Project> projectOptional = projectDAO.findById(addSonarRepositoryDTO.getProjectId());
-        if (projectOptional.isPresent()) {
-            Project project = projectOptional.get();
-            Repository repository = new Repository();
-            repository.setUrl(addSonarRepositoryDTO.getRepositoryURL());
-            repository.setType("sonar");
-            project.getRepositorySet().add(repository);
-            projectDAO.save(project);
-            return true;
-        } else {
-            return false;
-        }
+        if (projectOptional.isEmpty()) return false;
+
+        Project project = projectOptional.get();
+        Repository repository = new Repository();
+        repository.setUrl(addSonarRepositoryDTO.getRepositoryURL());
+        repository.setType("sonar");
+        project.getRepositorySet().add(repository);
+        projectDAO.save(project);
+        return true;
     }
 
     public boolean addGithubRepo(AddGithubRepositoryDTO addGithubRepositoryDTO) throws IOException {
         Optional<Project> projectOptional = projectDAO.findById(addGithubRepositoryDTO.getProjectId());
-        if (projectOptional.isPresent()) {
-            Project project = projectOptional.get();
-            String url = addGithubRepositoryDTO.getRepositoryURL();
-            Repository repository = new Repository();
-            repository.setUrl(url);
-            repository.setType("github");
-            project.getRepositorySet().add(repository);
-            String owner = url.split("/")[3];
-            JsonNode responseJson = githubApiService.getAvatarURL(owner);
-            if (null != responseJson) {
-                String json = responseJson.textValue();
-                project.setAvatarURL(json);
-            }
-            projectDAO.save(project);
-            return true;
-        } else {
-            return false;
+        if (projectOptional.isEmpty()) return false;
+
+        Project project = projectOptional.get();
+        String url = addGithubRepositoryDTO.getRepositoryURL();
+        Repository repository = new Repository();
+        repository.setUrl(url);
+        repository.setType("github");
+        project.getRepositorySet().add(repository);
+        String owner = url.split("/")[3]; // Get gitHub project owner name by split project url
+        JsonNode responseJson = githubApiService.getAvatarURL(owner);
+        if (null != responseJson) {
+            String json = responseJson.textValue();
+            project.setAvatarURL(json);
         }
+        projectDAO.save(project);
+        return true;
+    }
+
+    public boolean addGitlabRepo(AddGitLabRepositoryDTO addGitlabRepositoryDTO) throws GitLabApiException {
+        Optional<Project> projectOptional = projectDAO.findById(addGitlabRepositoryDTO.getProjectId());
+        if (projectOptional.isEmpty()) return false;
+
+        Project project = projectOptional.get();
+        String url = addGitlabRepositoryDTO.getRepositoryURL();
+        Repository repository = new Repository();
+        repository.setUrl(url);
+        repository.setType("gitlab");
+        project.getRepositorySet().add(repository);
+        String owner = url.split("/")[3];
+        String projectName = url.split("/")[4];
+        String responseURL = gitlabApiService.getAvatarURL(owner, projectName);
+        if (null != responseURL) {
+            project.setAvatarURL(responseURL);
+        }
+        projectDAO.save(project);
+        return true;
     }
 
     public boolean removeProjectById(Long projectId) {
