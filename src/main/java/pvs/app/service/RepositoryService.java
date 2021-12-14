@@ -34,6 +34,10 @@ public class RepositoryService {
         return true;
     }
 
+    public boolean checkGitlabURL(String url) {
+        return url.contains("gitlab.com");
+    }
+
     public boolean checkSonarURL(String url) {
         if (!url.contains("sonarcloud.io")) {
             return false;

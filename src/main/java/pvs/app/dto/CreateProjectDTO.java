@@ -6,5 +6,6 @@ import lombok.Data;
 public class CreateProjectDTO {
     private String projectName;
     private String githubRepositoryURL;
+    private String gitlabRepositoryURL;
     private String sonarRepositoryURL;
 }
