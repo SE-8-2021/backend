@@ -2,6 +2,7 @@ package pvs.app.controller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.gitlab4j.api.GitLabApiException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -73,7 +74,7 @@ public class ProjectController {
         try {
             projectService.create(projectDTO);
             return ResponseEntity.status(HttpStatus.OK).body(successMessage);
-        } catch (IOException e) {
+        } catch (IOException | GitLabApiException e) {
             e.printStackTrace();
             logger.debug(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
@@ -102,6 +103,23 @@ public class ProjectController {
         try {
             if (repositoryService.checkGithubURL(addGithubRepositoryDTO.getRepositoryURL())) {
                 if (projectService.addGithubRepo(addGithubRepositoryDTO)) {
+                    return ResponseEntity.status(HttpStatus.OK).body(successMessage);
+                } else {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);
+                }
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
+        }
+    }
+
+    @PostMapping("/project/{projectId}/repository/gitlab")
+    public ResponseEntity<String> addGitLabRepository(@RequestBody AddGitLabRepositoryDTO addGitlabRepositoryDTO) {
+        try {
+            if (repositoryService.checkGitlabURL(addGitlabRepositoryDTO.getRepositoryURL())) {
+                if (projectService.addGitlabRepo(addGitlabRepositoryDTO)) {
                     return ResponseEntity.status(HttpStatus.OK).body(successMessage);
                 } else {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);
