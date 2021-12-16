@@ -154,6 +154,7 @@ public class ProjectService {
         if (null != responseURL) {
             project.setTrelloAvatarURL(responseURL);
             projectDAO.save(project);
+        }
         return true;
     }
 }
