@@ -7,7 +7,6 @@ import kong.unirest.Unirest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 import pvs.app.service.data.TrelloData;
 
 import java.io.BufferedReader;
@@ -36,8 +35,8 @@ public class TrelloApiService {
             BufferedReader br = new BufferedReader(new InputStreamReader(pr.getInputStream()));
             jsonString = br.readLine();
             br.close();
-        }catch (IOException e){
-            e.printStackTrace();;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return jsonString;
     }
@@ -45,7 +44,7 @@ public class TrelloApiService {
     public String getBoard(String url) {
         JSONArray jsonArray = new JSONArray(getBoardsFromTrello());
         String id = "";
-        for (int i=0; i<jsonArray.length(); i++) {
+        for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             if (Objects.equals(jsonObject.getString("url"), url)) {
                 id = jsonObject.getString("id");
@@ -56,7 +55,7 @@ public class TrelloApiService {
     }
 
     public String getDataOfBoard(String ID, String dataCategory) {
-        HttpResponse<String> response = Unirest.get("https://api.trello.com/1/boards/"+ID+"/"+dataCategory+"?&key=" + trelloApiKey + "&token=" + trelloApiToken)
+        HttpResponse<String> response = Unirest.get("https://api.trello.com/1/boards/" + ID + "/" + dataCategory + "?&key=" + trelloApiKey + "&token=" + trelloApiToken)
                 .header("Accept", "application/json")
                 .asString();
 
@@ -64,7 +63,7 @@ public class TrelloApiService {
     }
 
     public String getDataOfList(String ID, String dataCategory) {
-        HttpResponse<String> response = Unirest.get("https://api.trello.com/1/lists/"+ID+"/"+dataCategory+"?&key=" + trelloApiKey + "&token=" + trelloApiToken)
+        HttpResponse<String> response = Unirest.get("https://api.trello.com/1/lists/" + ID + "/" + dataCategory + "?&key=" + trelloApiKey + "&token=" + trelloApiToken)
                 .header("Accept", "application/json")
                 .asString();
 
@@ -76,13 +75,13 @@ public class TrelloApiService {
         JSONArray listsOfBoard = new JSONArray(getDataOfBoard(id, "lists"));
         System.out.println(listsOfBoard);
         TrelloData trelloData = new TrelloData();
-        for (int i=0; i < listsOfBoard.length(); i++) {
+        for (int i = 0; i < listsOfBoard.length(); i++) {
             JSONObject list = listsOfBoard.getJSONObject(i);
             JSONArray cardsInList = new JSONArray(getDataOfList(list.getString("id"), "cards"));
             System.out.println(cardsInList);
             String label = cardsInList.length() + "/" + cardsInList.length();
             TrelloData.TrelloList trelloList = trelloData.createList(list.getString("id"), list.getString("name"), label, 280);
-            for (int j=0; j < cardsInList.length(); j++) {
+            for (int j = 0; j < cardsInList.length(); j++) {
                 JSONObject card = cardsInList.getJSONObject(j);
                 trelloList.addCard(card.getString("id"), card.getString("name"), "", card.getString("desc"));
             }
@@ -100,8 +99,8 @@ public class TrelloApiService {
             BufferedReader br = new BufferedReader(new InputStreamReader(pr.getInputStream()));
             jsonString = br.readLine();
             br.close();
-        }catch (IOException e){
-            e.printStackTrace();;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         JSONObject jsonObject = new JSONObject(jsonString);
         return jsonObject.getString("avatarUrl");

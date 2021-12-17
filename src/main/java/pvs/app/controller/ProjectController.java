@@ -104,12 +104,10 @@ public class ProjectController {
             if (repositoryService.checkGithubURL(addGithubRepositoryDTO.getRepositoryURL())) {
                 if (projectService.addGithubRepo(addGithubRepositoryDTO)) {
                     return ResponseEntity.status(HttpStatus.OK).body(successMessage);
-                } else {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);
                 }
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);
             }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
         }
@@ -121,12 +119,25 @@ public class ProjectController {
             if (repositoryService.checkGitlabURL(addGitlabRepositoryDTO.getRepositoryURL())) {
                 if (projectService.addGitlabRepo(addGitlabRepositoryDTO)) {
                     return ResponseEntity.status(HttpStatus.OK).body(successMessage);
-                } else {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);
                 }
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);
             }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
+        }
+    }
+
+    @PostMapping("/project/{projectId}/repository/trello")
+    public ResponseEntity<String> addTrelloBoard(@RequestBody AddTrelloBoardDTO addTrelloBoardDTO) {
+        try {
+            if (repositoryService.checkTrelloURL(addTrelloBoardDTO.getRepositoryURL())) {
+                if (projectService.addTrelloBoard(addTrelloBoardDTO)) {
+                    return ResponseEntity.status(HttpStatus.OK).body(successMessage);
+                }
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
         }
@@ -140,23 +151,6 @@ public class ProjectController {
         //    0        0    //
         //         3        //
         //////////\\\\\\\\\\\\
-    }
-
-    @PostMapping("/project/{projectId}/repository/trello")
-    public ResponseEntity<String> addTrelloBoard(@RequestBody AddTrelloBoardDTO addTrelloBoardDTO) {
-        try {
-            if (repositoryService.checkTrelloURL(addTrelloBoardDTO.getRepositoryURL())) {
-                if (projectService.addTrelloBoard(addTrelloBoardDTO)) {
-                    return ResponseEntity.status(HttpStatus.OK).body(successMessage);
-                } else {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);
-                }
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
-        }
     }
 
     @GetMapping("/project/{memberId}/{projectId}")
