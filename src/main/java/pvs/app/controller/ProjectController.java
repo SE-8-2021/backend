@@ -153,7 +153,7 @@ public class ProjectController {
         //////////\\\\\\\\\\\\
     }
 
-    @PostMapping("/project/remove/{projectId}")
+    @DeleteMapping("/project/remove/{projectId}")
     public ResponseEntity<String> removeProject(@PathVariable Long projectId) {
         if (projectService.removeProjectById(projectId)) {
             return ResponseEntity.status(HttpStatus.OK).body(successMessage);

@@ -127,6 +127,7 @@ public class ProjectService {
         return true;
     }
 
+    // toggle removed attribute to true
     public boolean removeProjectById(Long projectId) {
         final Optional<Project> project = projectDAO.findById(projectId);
         if (project.isPresent()) {
@@ -139,6 +140,7 @@ public class ProjectService {
         }
     }
 
+    // get the projects that are not removed
     public List<ResponseProjectDTO> getMemberActiveProjects(Long memberId) {
         final List<Project> projectList = projectDAO.findByMemberId(memberId);
         final List<ResponseProjectDTO> projectDTOList = new ArrayList<>();
