@@ -9,38 +9,27 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import pvs.app.service.data.TrelloData;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Objects;
 
 @Service
 @SuppressWarnings("squid:S1192")
 public class TrelloApiService {
-    private final Runtime rt;
     private final String trelloApiKey, trelloApiToken;
     private final String trelloApiBaseUrl;
 
     public TrelloApiService() {
         this.trelloApiKey = System.getenv("PVS_TRELLO_KEY");
         this.trelloApiToken = System.getenv("PVS_TRELLO_TOKEN");
-        this.rt = Runtime.getRuntime();
         this.trelloApiBaseUrl = "https://api.trello.com/1/";
         Unirest.config().cookieSpec(CookieSpecs.IGNORE_COOKIES);
     }
 
     public String getBoardsFromTrello() {
-        String jsonString = "";
-        try {
-            String curlCommand = "curl " + trelloApiBaseUrl + "members/me/boards?fields=name,url&key=" + trelloApiKey + "&token=" + trelloApiToken;
-            Process pr = rt.exec(curlCommand);
-            BufferedReader br = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-            jsonString = br.readLine();
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return jsonString;
+        HttpResponse<String> response = Unirest.get(trelloApiBaseUrl+ "members/me/boards?fields=name,url&key=" + trelloApiKey + "&token=" + trelloApiToken)
+                .header("Accept", "application/json")
+                .asString();
+
+        return response.getBody();
     }
 
     public String getBoard(String url) {
@@ -93,17 +82,10 @@ public class TrelloApiService {
     }
 
     public String getAvatarURL() {
-        String jsonString = "";
-        try {
-            String curlCommand = "curl " + trelloApiBaseUrl + "members/me/?fields=avatarUrl&key=" + trelloApiKey + "&token=" + trelloApiToken;
-            Process pr = rt.exec(curlCommand);
-            BufferedReader br = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-            jsonString = br.readLine();
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        JSONObject jsonObject = new JSONObject(jsonString);
+        HttpResponse<String> response = Unirest.get(trelloApiBaseUrl+ "members/me/?fields=avatarUrl&key=" + trelloApiKey + "&token=" + trelloApiToken)
+                .header("Accept", "application/json")
+                .asString();
+        JSONObject jsonObject = new JSONObject(response.getBody());
         return jsonObject.getString("avatarUrl");
     }
 }
