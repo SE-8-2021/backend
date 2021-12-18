@@ -3,28 +3,28 @@ package pvs.app.service.data;
 import java.util.ArrayList;
 
 public class TrelloData {
-    private final ArrayList<TrelloList> lanes;
+    private final ArrayList<Lane> lanes;
 
     public TrelloData(){
         this.lanes = new ArrayList<>();
     }
 
-    public TrelloList createList(String id, String title, String label, int width) {
-        return new TrelloList(id, title, label, width);
+    public Lane createLane(String id, String title, String label, int width) {
+        return new Lane(id, title, label, width);
     }
 
-    public void addList(TrelloList trelloList) {
-        this.lanes.add(trelloList);
+    public void addLane(Lane lane) {
+        this.lanes.add(lane);
     }
 
-    public static class TrelloList {
+    public static class Lane {
         private final String id;
         private final String title;
         private final String label;
         private final Width style;
         private final ArrayList<Card> cards;
 
-        public TrelloList(String id, String title, String label, int width) {
+        public Lane(String id, String title, String label, int width) {
             this.id = id;
             this.title = title;
             this.label = label;
@@ -32,8 +32,7 @@ public class TrelloData {
             this.cards = new ArrayList<>();
         }
 
-        public void addCard(String id, String title, String label, String description) {
-            Card card = new Card(id, title, label, description);
+        public void addCard(Card card) {
             this.cards.add(card);
         }
     }
@@ -45,7 +44,7 @@ public class TrelloData {
         }
     }
 
-    private static class Card {
+    public static class Card {
         private final String id;
         private final String title;
         private final String label;

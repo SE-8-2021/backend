@@ -19,19 +19,21 @@ import java.util.Objects;
 public class TrelloApiService {
     private final Runtime rt;
     private final String trelloApiKey, trelloApiToken;
+    private final String trelloApiBaseUrl;
 
     public TrelloApiService() {
         this.trelloApiKey = System.getenv("PVS_TRELLO_KEY");
         this.trelloApiToken = System.getenv("PVS_TRELLO_TOKEN");
         this.rt = Runtime.getRuntime();
+        this.trelloApiBaseUrl = "https://api.trello.com/1/";
         Unirest.config().cookieSpec(CookieSpecs.IGNORE_COOKIES);
     }
 
     public String getBoardsFromTrello() {
         String jsonString = "";
         try {
-            String curl = "curl https://api.trello.com/1/members/me/boards?fields=name,url&key=" + trelloApiKey + "&token=" + trelloApiToken;
-            Process pr = rt.exec(curl);
+            String curlCommand = "curl " + trelloApiBaseUrl + "members/me/boards?fields=name,url&key=" + trelloApiKey + "&token=" + trelloApiToken;
+            Process pr = rt.exec(curlCommand);
             BufferedReader br = new BufferedReader(new InputStreamReader(pr.getInputStream()));
             jsonString = br.readLine();
             br.close();
@@ -55,7 +57,7 @@ public class TrelloApiService {
     }
 
     public String getDataOfBoard(String ID, String dataCategory) {
-        HttpResponse<String> response = Unirest.get("https://api.trello.com/1/boards/" + ID + "/" + dataCategory + "?&key=" + trelloApiKey + "&token=" + trelloApiToken)
+        HttpResponse<String> response = Unirest.get(trelloApiBaseUrl+ "boards/" + ID + "/" + dataCategory + "?&key=" + trelloApiKey + "&token=" + trelloApiToken)
                 .header("Accept", "application/json")
                 .asString();
 
@@ -63,7 +65,7 @@ public class TrelloApiService {
     }
 
     public String getDataOfList(String ID, String dataCategory) {
-        HttpResponse<String> response = Unirest.get("https://api.trello.com/1/lists/" + ID + "/" + dataCategory + "?&key=" + trelloApiKey + "&token=" + trelloApiToken)
+        HttpResponse<String> response = Unirest.get(trelloApiBaseUrl + "lists/" + ID + "/" + dataCategory + "?&key=" + trelloApiKey + "&token=" + trelloApiToken)
                 .header("Accept", "application/json")
                 .asString();
 
@@ -73,19 +75,18 @@ public class TrelloApiService {
     public String generate_data(String url) {
         String id = getBoard(url);
         JSONArray listsOfBoard = new JSONArray(getDataOfBoard(id, "lists"));
-        System.out.println(listsOfBoard);
         TrelloData trelloData = new TrelloData();
         for (int i = 0; i < listsOfBoard.length(); i++) {
             JSONObject list = listsOfBoard.getJSONObject(i);
             JSONArray cardsInList = new JSONArray(getDataOfList(list.getString("id"), "cards"));
-            System.out.println(cardsInList);
             String label = cardsInList.length() + "/" + cardsInList.length();
-            TrelloData.TrelloList trelloList = trelloData.createList(list.getString("id"), list.getString("name"), label, 280);
+            TrelloData.Lane lane = trelloData.createLane(list.getString("id"), list.getString("name"), label, 280);
             for (int j = 0; j < cardsInList.length(); j++) {
-                JSONObject card = cardsInList.getJSONObject(j);
-                trelloList.addCard(card.getString("id"), card.getString("name"), "", card.getString("desc"));
+                JSONObject cardJsonObject = cardsInList.getJSONObject(j);
+                TrelloData.Card card = new TrelloData.Card(cardJsonObject.getString("id"), cardJsonObject.getString("name"), "", cardJsonObject.getString("desc"));
+                lane.addCard(card);
             }
-            trelloData.addList(trelloList);
+            trelloData.addLane(lane);
         }
         Gson gson = new Gson();
         return gson.toJson(trelloData);
@@ -94,8 +95,8 @@ public class TrelloApiService {
     public String getAvatarURL() {
         String jsonString = "";
         try {
-            String curl = "curl https://api.trello.com/1/members/me/?fields=avatarUrl&key=" + trelloApiKey + "&token=" + trelloApiToken;
-            Process pr = rt.exec(curl);
+            String curlCommand = "curl " + trelloApiBaseUrl + "members/me/?fields=avatarUrl&key=" + trelloApiKey + "&token=" + trelloApiToken;
+            Process pr = rt.exec(curlCommand);
             BufferedReader br = new BufferedReader(new InputStreamReader(pr.getInputStream()));
             jsonString = br.readLine();
             br.close();

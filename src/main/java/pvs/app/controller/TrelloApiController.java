@@ -34,6 +34,6 @@ public class TrelloApiController {
         if (repositoryService.checkTrelloURL(url)) {
             return ResponseEntity.status(HttpStatus.OK).body(this.trelloApiService.generate_data(url));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return ResponseEntity.badRequest().build();
     }
 }
