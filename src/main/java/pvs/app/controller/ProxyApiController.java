@@ -16,10 +16,10 @@ import java.util.Objects;
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProxyApiController {
     private final Logger Log = LoggerFactory.getLogger(ProxyApiController.class);
-    private final SonarApiProxyService service;
+    private final SonarApiProxyService sonarApiProxyService;
 
     public ProxyApiController(SonarApiProxyService service) {
-        this.service = service;
+        this.sonarApiProxyService = service;
     }
 
     @GetMapping("/proxy/sonar/metrics")
@@ -29,7 +29,7 @@ public class ProxyApiController {
             @RequestParam(required = false) String component
     ) {
         try {
-            final Response proxyResponse = service.getMetrics(Headers.of(headers), metricKeys, component);
+            final Response proxyResponse = sonarApiProxyService.getMetrics(Headers.of(headers), metricKeys, component);
             return ResponseEntity
                     .status(proxyResponse.code())
                     .body(Objects.requireNonNull(proxyResponse.body()).string());
