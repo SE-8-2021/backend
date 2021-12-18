@@ -62,4 +62,16 @@ public class GitLabCommitService {
         return dto;
     }
 
+    public List<GitLabCommitDTO> getCommitsOfSpecificBranch(String repoOwner, String repoName, String branchName) {
+        List<GitlabCommit> entities = gitlabCommitDAO.findByRepoOwnerAndRepoNameAndBranchName(repoOwner, repoName, branchName);
+        List<GitLabCommitDTO> githubCommitDTOs = new LinkedList<>();
+
+        for (GitlabCommit gitlabCommit : entities) {
+            System.out.println(gitlabCommit.getBranchName());
+            GitLabCommitDTO dto = modelMapper.map(gitlabCommit, GitLabCommitDTO.class);
+            dto.setCommittedDate(gitlabCommit.getCommittedDate());
+            githubCommitDTOs.add(dto);
+        }
+        return githubCommitDTOs;
+    }
 }

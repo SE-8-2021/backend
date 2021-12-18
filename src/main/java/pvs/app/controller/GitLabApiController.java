@@ -17,6 +17,7 @@ import pvs.app.service.GitLabApiService;
 import pvs.app.service.GitLabCommitService;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -66,11 +67,9 @@ public class GitLabApiController {
         try {
             if (this.gitlabApiService.getCommitsFromGitlab(repoOwner, repoName)) {
                 return ResponseEntity.status(HttpStatus.OK).body("get commit from gitlab succeed");
-            } else {
-                return ResponseEntity.status(HttpStatus.OK).body("get commit from gitlab failed");
             }
-
-        } catch (InterruptedException | GitLabApiException e) {
+            return ResponseEntity.status(HttpStatus.OK).body("get commit from gitlab failed");
+        } catch (InterruptedException | GitLabApiException | ParseException e) {
             logger.debug(e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -107,6 +106,30 @@ public class GitLabApiController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(exceptionMessage);
+        }
+    }
+
+    @GetMapping("/gitlab/commits/branchName/{repoOwner}/{repoName}")
+    public ResponseEntity<List<String>> getBranchesName(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(this.gitlabApiService.getBranchesName(repoOwner, repoName));
+        } catch (GitLabApiException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    @GetMapping("/gitlab/commits/{repoOwner}/{repoName}/{branchName}")
+    public ResponseEntity<String> getCommitsOfBranch(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName, @PathVariable("branchName") String branchName) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<GitLabCommitDTO> gitLabCommitDTOS = this.gitlabCommitService.getCommitsOfSpecificBranch(repoOwner, repoName, branchName);
+        try {
+            String gitlabCommitDTOsJson = objectMapper.writeValueAsString(gitLabCommitDTOS);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(gitlabCommitDTOsJson);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 }

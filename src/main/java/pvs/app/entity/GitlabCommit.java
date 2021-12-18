@@ -48,6 +48,9 @@ public class GitlabCommit {
     @ToString.Exclude
     private Repository repository;
 
+    @NotNull
+    private String branchName;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -62,11 +65,12 @@ public class GitlabCommit {
                 committedDate.equals(that.committedDate) &&
                 authorName.equals(that.authorName) &&
                 authorEmail.equals(that.authorEmail) &&
-                repository.equals(that.repository);
+                repository.equals(that.repository)&&
+                branchName.equals(that.branchName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, repoOwner, repoName, committedDate, additions, deletions, changeFiles, authorName, authorEmail, repository);
+        return Objects.hash(id, repoOwner, repoName, committedDate, additions, deletions, changeFiles, authorName, authorEmail, repository, branchName);
     }
 }

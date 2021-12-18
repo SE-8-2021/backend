@@ -13,15 +13,16 @@ public class GitLabCommitLoaderThread extends Thread {
 
     private static final Object lock = new Object();
     private final GitLabCommitService gitlabCommitService;
-    private final String repoOwner, repoName;
+    private final String repoOwner, repoName, branchName;
     private final String responseJson;
     private final CommitStats commitStats;
     private final Integer changeFileCount;
 
-    public GitLabCommitLoaderThread(GitLabCommitService githubCommitService, String repoOwner, String repoName, String responseJson, CommitStats commitStats, Integer changeFileCount) {
+    public GitLabCommitLoaderThread(GitLabCommitService githubCommitService, String repoOwner, String repoName, String branchName, String responseJson, CommitStats commitStats, Integer changeFileCount) {
         this.gitlabCommitService = githubCommitService;
         this.repoOwner = repoOwner;
         this.repoName = repoName;
+        this.branchName = branchName;
         this.responseJson = responseJson;
         this.commitStats = commitStats;
         this.changeFileCount = changeFileCount;
@@ -37,6 +38,7 @@ public class GitLabCommitLoaderThread extends Thread {
             GitLabCommitDTO gitlabCommitDTO = new GitLabCommitDTO();
             gitlabCommitDTO.setRepoOwner(repoOwner);
             gitlabCommitDTO.setRepoName(repoName);
+            gitlabCommitDTO.setBranchName(branchName);
             gitlabCommitDTO.setAuthorName(String.valueOf(commitJsonNode.get("authorName")));
             gitlabCommitDTO.setAuthorEmail(String.valueOf(commitJsonNode.get("authorEmail")));
             gitlabCommitDTO.setAdditions(commitStats.getAdditions());
