@@ -18,13 +18,11 @@ public class ProjectService {
     private final ProjectDAO projectDAO;
     private final GithubApiService githubApiService;
     private final GitLabApiService gitlabApiService;
-    private final TrelloApiService trelloApiService;
 
-    public ProjectService(ProjectDAO projectDAO, GithubApiService githubApiService, GitLabApiService gitlabApiService, TrelloApiService trelloApiService) {
+    public ProjectService(ProjectDAO projectDAO, GithubApiService githubApiService, GitLabApiService gitlabApiService) {
         this.projectDAO = projectDAO;
         this.githubApiService = githubApiService;
         this.gitlabApiService = gitlabApiService;
-        this.trelloApiService = trelloApiService;
     }
 
     public void create(CreateProjectDTO projectDTO) throws IOException, GitLabApiException {
@@ -72,9 +70,6 @@ public class ProjectService {
             projectDTO.setProjectId(project.getProjectId());
             projectDTO.setProjectName(project.getName());
             projectDTO.setAvatarURL(project.getAvatarURL());
-            projectDTO.setGithubAvatarURL(project.getGithubAvatarURL());
-            projectDTO.setGitlabAvatarURL(project.getGitlabAvatarURL());
-            projectDTO.setTrelloAvatarURL(project.getTrelloAvatarURL());
             for (Repository repository : project.getRepositorySet()) {
                 RepositoryDTO repositoryDTO = new RepositoryDTO();
                 repositoryDTO.setUrl(repository.getUrl());
@@ -114,7 +109,6 @@ public class ProjectService {
         if (responseURL != null) {
             String avatarUrl = responseURL.textValue();
             project.setAvatarURL(avatarUrl);
-            project.setGithubAvatarURL(avatarUrl);
         }
         projectDAO.save(project);
         return true;
@@ -150,11 +144,7 @@ public class ProjectService {
         repository.setUrl(url);
         repository.setType("trello");
         project.getRepositorySet().add(repository);
-        String responseURL = trelloApiService.getAvatarURL();
-        if (responseURL != null) {
-            project.setTrelloAvatarURL(responseURL);
-            projectDAO.save(project);
-        }
+        projectDAO.save(project);
         return true;
     }
 }
