@@ -88,6 +88,44 @@ public class GithubApiController {
         }
     }
 
+    @GetMapping("/github/commits/branchName/{repoOwner}/{repoName}")
+    public ResponseEntity<List<String>> getBranchesName(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
+        Date lastUpdate;
+        GithubCommitDTO githubCommitDTO = githubCommitService.getLastCommit(repoOwner, repoName);
+        if (null == githubCommitDTO) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(1970, Calendar.JANUARY, 1);
+            lastUpdate = calendar.getTime();
+        } else {
+            lastUpdate = githubCommitDTO.getCommittedDate();
+        }
+
+        try {
+            List<String> branchNameList = this.githubApiService.getBranchesName(repoOwner, repoName, lastUpdate);
+            if (branchNameList.size() == 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(branchNameList);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @GetMapping("/github/commits/{repoOwner}/{repoName}/{branchName}")
+    public ResponseEntity<String> getCommitsOfBranch(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName, @PathVariable("branchName") String branchName) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<GithubCommitDTO> githubCommitDTOS = this.githubCommitService.getCommitsOfSpecificBranch(repoOwner, repoName, branchName);
+        try {
+            String githubCommitDTOsJson = objectMapper.writeValueAsString(githubCommitDTOS);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(githubCommitDTOsJson);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("get commits from branches failed");
+        }
+    }
+
     @GetMapping("/github/issues/{repoOwner}/{repoName}")
     public ResponseEntity<String> getIssues(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
         ObjectMapper objectMapper = new ObjectMapper();
