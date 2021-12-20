@@ -44,14 +44,12 @@ public class GitLabApiService {
     }
 
     private void getProjectID(String owner, String name) throws GitLabApiException {
-        ProjectApi projectApi = this.gitLabApi.getProjectApi();
-        this.projectID = projectApi.getProject(owner, name).getId();
+        this.projectID = this.gitLabApi.getProjectApi().getProject(owner, name).getId();
     }
 
     private List<Branch> getBranches(String owner, String name) throws GitLabApiException {
         getProjectID(owner, name);
-        RepositoryApi repositoryApi = this.gitLabApi.getRepositoryApi();
-        return repositoryApi.getBranches(projectID);
+        return this.gitLabApi.getRepositoryApi().getBranches(projectID);
     }
 
     public List<String> getBranchesName(String owner, String name) throws GitLabApiException {

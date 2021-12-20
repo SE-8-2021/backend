@@ -65,7 +65,6 @@ public class GitLabCommitService {
         List<GitLabCommitDTO> githubCommitDTOs = new LinkedList<>();
 
         for (GitlabCommit gitlabCommit : entities) {
-            System.out.println(gitlabCommit.getBranchName());
             GitLabCommitDTO dto = modelMapper.map(gitlabCommit, GitLabCommitDTO.class);
             dto.setCommittedDate(gitlabCommit.getCommittedDate());
             githubCommitDTOs.add(dto);
