@@ -54,4 +54,8 @@ public class RepositoryService {
         // TODO: Check if we can get a successful response from the targetURL. To facilitate development, temporarily force it to be true.
         return true;
     }
+
+    public boolean checkTrelloURL(String url) {
+        return url.contains("trello.com");
+    }
 }
