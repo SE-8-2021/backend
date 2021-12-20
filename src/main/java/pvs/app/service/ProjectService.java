@@ -52,6 +52,13 @@ public class ProjectService {
             addSonarRepositoryDTO.setRepositoryURL(projectDTO.getSonarRepositoryURL());
             addSonarRepo(addSonarRepositoryDTO);
         }
+
+        if (!projectDTO.getTrelloBoardURL().trim().equals("")) {
+            AddTrelloBoardDTO addTrelloBoardDTO = new AddTrelloBoardDTO();
+            addTrelloBoardDTO.setProjectId(savedProject.getProjectId());
+            addTrelloBoardDTO.setRepositoryURL(projectDTO.getSonarRepositoryURL());
+            addTrelloBoard(addTrelloBoardDTO);
+        }
     }
 
     public List<ResponseProjectDTO> getMemberProjects(Long memberId) {
@@ -98,15 +105,15 @@ public class ProjectService {
         repository.setType("github");
         project.getRepositorySet().add(repository);
         String owner = url.split("/")[3]; // Get gitHub project owner name by split project url
-        JsonNode responseJson = githubApiService.getAvatarURL(owner);
-        if (null != responseJson) {
-            String json = responseJson.textValue();
-            project.setAvatarURL(json);
+        JsonNode responseURL = githubApiService.getAvatarURL(owner);
+        if (responseURL != null) {
+            String avatarUrl = responseURL.textValue();
+            project.setAvatarURL(avatarUrl);
         }
         projectDAO.save(project);
         return true;
     }
-
+  
     public boolean addGitlabRepo(AddGitLabRepositoryDTO addGitlabRepositoryDTO) throws GitLabApiException {
         Optional<Project> projectOptional = projectDAO.findById(addGitlabRepositoryDTO.getProjectId());
         if (projectOptional.isEmpty()) return false;
@@ -120,7 +127,7 @@ public class ProjectService {
         String owner = url.split("/")[3];
         String projectName = url.split("/")[4];
         String responseURL = gitlabApiService.getAvatarURL(owner, projectName);
-        if (null != responseURL) {
+        if (responseURL != null) {
             project.setAvatarURL(responseURL);
         }
         projectDAO.save(project);
@@ -161,5 +168,19 @@ public class ProjectService {
             }
         }
         return projectDTOList;
+    }
+  
+    public boolean addTrelloBoard(AddTrelloBoardDTO addTrelloBoardDTO) {
+        Optional<Project> projectOptional = projectDAO.findById(addTrelloBoardDTO.getProjectId());
+        if (projectOptional.isEmpty()) return false;
+
+        Project project = projectOptional.get();
+        String url = addTrelloBoardDTO.getRepositoryURL();
+        Repository repository = new Repository();
+        repository.setUrl(url);
+        repository.setType("trello");
+        project.getRepositorySet().add(repository);
+        projectDAO.save(project);
+        return true;
     }
 }

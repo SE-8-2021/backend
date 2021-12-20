@@ -8,4 +8,5 @@ public class CreateProjectDTO {
     private String githubRepositoryURL;
     private String gitlabRepositoryURL;
     private String sonarRepositoryURL;
+    private String trelloBoardURL;
 }
