@@ -30,8 +30,6 @@ public class GitLabCommitService {
         List<GitlabCommit> entities = gitlabCommitDAO.findByRepoOwnerAndRepoName(gitlabCommit.getRepoOwner(), gitlabCommit.getRepoName());
         SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
         for (GitlabCommit gitlabCommits : entities) {
-//            System.out.println("commits in database: " + gitlabCommits.getCommittedDate());
-//            System.out.println("commit to be checked: " + sdFormat.format(gitlabCommit.getCommittedDate()));
             if (String.valueOf(gitlabCommits.getCommittedDate()).equals(sdFormat.format(gitlabCommit.getCommittedDate()))) {
                 return true;
             }
@@ -62,4 +60,16 @@ public class GitLabCommitService {
         return dto;
     }
 
+    public List<GitLabCommitDTO> getCommitsOfSpecificBranch(String repoOwner, String repoName, String branchName) {
+        List<GitlabCommit> entities = gitlabCommitDAO.findByRepoOwnerAndRepoNameAndBranchName(repoOwner, repoName, branchName);
+        List<GitLabCommitDTO> githubCommitDTOs = new LinkedList<>();
+
+        for (GitlabCommit gitlabCommit : entities) {
+            System.out.println(gitlabCommit.getBranchName());
+            GitLabCommitDTO dto = modelMapper.map(gitlabCommit, GitLabCommitDTO.class);
+            dto.setCommittedDate(gitlabCommit.getCommittedDate());
+            githubCommitDTOs.add(dto);
+        }
+        return githubCommitDTOs;
+    }
 }

@@ -113,7 +113,7 @@ public class ProjectService {
         projectDAO.save(project);
         return true;
     }
-  
+
     public boolean addGitlabRepo(AddGitLabRepositoryDTO addGitlabRepositoryDTO) throws GitLabApiException {
         Optional<Project> projectOptional = projectDAO.findById(addGitlabRepositoryDTO.getProjectId());
         if (projectOptional.isEmpty()) return false;
