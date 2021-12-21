@@ -133,42 +133,6 @@ public class ProjectService {
         projectDAO.save(project);
         return true;
     }
-
-    // toggle removed attribute to true
-    public boolean removeProjectById(Long projectId) {
-        final Optional<Project> project = projectDAO.findById(projectId);
-        if (project.isPresent()) {
-            Project projectToBeRemoved = project.get();
-            projectToBeRemoved.setRemoved(true);
-            projectDAO.save(projectToBeRemoved);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    // get the projects that are not removed
-    public List<ResponseProjectDTO> getMemberActiveProjects(Long memberId) {
-        final List<Project> projectList = projectDAO.findByMemberId(memberId);
-        final List<ResponseProjectDTO> projectDTOList = new ArrayList<>();
-
-        for (Project project : projectList) {
-            if (!project.isRemoved()) {
-                ResponseProjectDTO projectDTO = new ResponseProjectDTO();
-                projectDTO.setProjectId(project.getProjectId());
-                projectDTO.setProjectName(project.getName());
-                projectDTO.setAvatarURL(project.getAvatarURL());
-                for (Repository repository : project.getRepositorySet()) {
-                    RepositoryDTO repositoryDTO = new RepositoryDTO();
-                    repositoryDTO.setUrl(repository.getUrl());
-                    repositoryDTO.setType(repository.getType());
-                    projectDTO.getRepositoryDTOList().add(repositoryDTO);
-                }
-                projectDTOList.add(projectDTO);
-            }
-        }
-        return projectDTOList;
-    }
   
     public boolean addTrelloBoard(AddTrelloBoardDTO addTrelloBoardDTO) {
         Optional<Project> projectOptional = projectDAO.findById(addTrelloBoardDTO.getProjectId());
