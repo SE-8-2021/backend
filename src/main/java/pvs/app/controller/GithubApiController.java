@@ -16,6 +16,7 @@ import pvs.app.service.GithubApiService;
 import pvs.app.service.GithubCommitService;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -39,15 +40,8 @@ public class GithubApiController {
     @PostMapping("/github/commits/{repoOwner}/{repoName}")
     public ResponseEntity<String> postCommits(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
         boolean callAPISuccess;
-        Date lastUpdate;
         GithubCommitDTO githubCommitDTO = githubCommitService.getLastCommit(repoOwner, repoName);
-        if (null == githubCommitDTO) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(1970, Calendar.JANUARY, 1);
-            lastUpdate = calendar.getTime();
-        } else {
-            lastUpdate = githubCommitDTO.getCommittedDate();
-        }
+        final Date lastUpdate = githubCommitDTO == null ? Date.from(Instant.ofEpochSecond(0)) : githubCommitDTO.getCommittedDate();
 
         try {
             callAPISuccess = githubApiService.getCommitsFromGithub(repoOwner, repoName, lastUpdate);
@@ -88,8 +82,8 @@ public class GithubApiController {
         }
     }
 
-    @GetMapping("/github/commits/branchName/{repoOwner}/{repoName}")
-    public ResponseEntity<List<String>> getBranchesName(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
+    @GetMapping("/github/commits/branchList/{repoOwner}/{repoName}")
+    public ResponseEntity<List<String>> getBranchList(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
         Date lastUpdate;
         GithubCommitDTO githubCommitDTO = githubCommitService.getLastCommit(repoOwner, repoName);
         if (null == githubCommitDTO) {
@@ -101,8 +95,8 @@ public class GithubApiController {
         }
 
         try {
-            List<String> branchNameList = this.githubApiService.getBranchesName(repoOwner, repoName, lastUpdate);
-            if (branchNameList.size() == 0) {
+            List<String> branchNameList = this.githubApiService.getBranchNameList(repoOwner, repoName, lastUpdate);
+            if (branchNameList.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
             return ResponseEntity.status(HttpStatus.OK).body(branchNameList);

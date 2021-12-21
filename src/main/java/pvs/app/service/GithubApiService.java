@@ -120,13 +120,19 @@ public class GithubApiService {
                         .map(target -> target.get("history"));
 
                 if(branchName.isPresent() && commitsFromABranch.isPresent()) {
-                    double totalCount = commitsFromABranch.get().get("totalCount").asInt();
+                    final double totalCount = commitsFromABranch.get().get("totalCount").asDouble();
                     List<GithubCommitLoaderThread> githubCommitLoaderThreadList = new ArrayList<>();
 
                     if (totalCount != 0) {
-                        String cursor = commitsFromABranch.get().get("pageInfo").get("startCursor").textValue()
+                        String cursor = commitsFromABranch
+                                .get()
+                                .get("pageInfo")
+                                .get("startCursor")
+                                .textValue()
                                 .split(" ")[0];
-                        for (int i = 1; i <= Math.ceil(totalCount / 100); i++) {
+                        final int ThreadSplittingFactor = 100;
+                        final double totalThreadAmount = Math.ceil(totalCount / ThreadSplittingFactor);
+                        for (int threadNumber = 1; threadNumber <= totalThreadAmount; threadNumber++) {
                             GithubCommitLoaderThread githubCommitLoaderThread =
                                     new GithubCommitLoaderThread(
                                             this.webClient,
@@ -134,7 +140,7 @@ public class GithubApiService {
                                             owner,
                                             name,
                                             branchName.get().asText(),
-                                            cursor + " " + (i * 100));
+                                            cursor + " " + (threadNumber * 100));
                             githubCommitLoaderThreadList.add(githubCommitLoaderThread);
                             githubCommitLoaderThread.start();
                         }
@@ -151,7 +157,7 @@ public class GithubApiService {
         }
     }
 
-    public List<String> getBranchesName(String owner, String name, Date lastUpdate) throws IOException{
+    public List<String> getBranchNameList(String owner, String name, Date lastUpdate) throws IOException{
         this.setGraphQlGetCommitsTotalCountAndCursorQuery(owner, name, lastUpdate);
 
         List<String> branchNameList = new ArrayList<>();
