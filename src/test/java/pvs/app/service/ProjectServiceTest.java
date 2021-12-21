@@ -28,6 +28,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(classes = Application.class)
 public class ProjectServiceTest {
     final String responseJson = "{\"avatarUrl\":\"https://avatars3.githubusercontent.com/u/17744001?u=038d9e068c4205d94c670d7d89fb921ec5b29782&v=4\"}";
+    final Long memberID = 1L;
     CreateProjectDTO projectDTO;
     Project project;
     Repository githubRepository;
@@ -49,7 +50,7 @@ public class ProjectServiceTest {
 
         project = new Project();
         project.setProjectId(1L);
-        project.setMemberId(1L);
+        project.setMemberId(memberID);
         project.setName(projectDTO.getProjectName());
 
         githubRepository = new Repository();
@@ -107,14 +108,14 @@ public class ProjectServiceTest {
     @Test
     public void removeProjectsAndGetTheActiveProjects() {
         // when
-        when(projectDAO.findByMemberId(1L))
+        when(projectDAO.findByMemberId(memberID))
                 .thenReturn(List.of(project));
         when(projectDAO.findById(project.getProjectId()))
                 .thenReturn(Optional.of(project));
 
         // then
-        assertEquals(1, projectService.getMemberActiveProjects(1L).size());
+        assertEquals(1, projectService.getMemberActiveProjects(memberID).size());
         assertTrue(projectService.removeProjectById(project.getProjectId()));
-        assertEquals(0, projectService.getMemberActiveProjects(1L).size());
+        assertEquals(0, projectService.getMemberActiveProjects(memberID).size());
     }
 }
