@@ -170,4 +170,20 @@ public class ProjectController {
         //         3        //
         //////////\\\\\\\\\\\\
     }
+
+    @DeleteMapping("/project/remove/{projectId}")
+    public ResponseEntity<String> removeProject(@PathVariable Long projectId) {
+        if (projectService.removeProjectById(projectId)) {
+            return ResponseEntity.status(HttpStatus.OK).body(successMessage);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);
+        }
+    }
+
+    // get the projects that are not removed
+    @GetMapping("/project/{memberId}/active")
+    public ResponseEntity<List<ResponseProjectDTO>> readMemberActiveProjects(@PathVariable Long memberId) {
+        List<ResponseProjectDTO> projectList = projectService.getMemberActiveProjects(memberId);
+        return ResponseEntity.status(HttpStatus.OK).body(projectList);
+    }
 }
