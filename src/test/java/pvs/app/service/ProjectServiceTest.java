@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
@@ -101,5 +102,19 @@ public class ProjectServiceTest {
         //then
         assertEquals(1, projectService.getMemberProjects(1L).size());
 //        assertTrue(projectDTOList.equals(projectService.getMemberProjects(1L)));
+    }
+
+    @Test
+    public void removeProjectsAndGetTheActiveProjects() {
+        // when
+        when(projectDAO.findByMemberId(1L))
+                .thenReturn(List.of(project));
+        when(projectDAO.findById(project.getProjectId()))
+                .thenReturn(Optional.of(project));
+
+        // then
+        assertEquals(1, projectService.getMemberActiveProjects(1L).size());
+        assertTrue(projectService.removeProjectById(project.getProjectId()));
+        assertEquals(0, projectService.getMemberActiveProjects(1L).size());
     }
 }
