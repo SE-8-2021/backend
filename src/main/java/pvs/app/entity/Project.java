@@ -26,6 +26,11 @@ public class Project {
     @NotNull
     private String avatarURL = "https://avatars3.githubusercontent.com/u/17744001?u=038d9e068c4205d94c670d7d89fb921ec5b29782&v=4";
 
+    // default value is false
+    // getter of "boolean" type is "isRemoved()"
+    @NotNull
+    private boolean removed = false;
+
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "project_repository",
@@ -33,8 +38,4 @@ public class Project {
             inverseJoinColumns = {@JoinColumn(name = "repository_id")}
     )
     private Set<Repository> repositorySet = new HashSet<>();
-
-    // default value is false
-    @NotNull
-    private boolean removed = false;
 }
