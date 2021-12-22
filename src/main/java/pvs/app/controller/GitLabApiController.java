@@ -109,13 +109,17 @@ public class GitLabApiController {
         }
     }
 
-    @GetMapping("/gitlab/commits/branchName/{repoOwner}/{repoName}")
-    public ResponseEntity<List<String>> getBranchesName(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
+    @GetMapping("/gitlab/branchList/{repoOwner}/{repoName}")
+    public ResponseEntity<List<String>> getBranchList(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(this.gitlabApiService.getBranchesName(repoOwner, repoName));
+            List<String> branchNameList = this.gitlabApiService.getBranchNameList(repoOwner, repoName);
+            if (branchNameList.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(branchNameList);
         } catch (GitLabApiException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
@@ -129,7 +133,7 @@ public class GitLabApiController {
                     .body(gitlabCommitDTOsJson);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Get commits from branches failed");
         }
     }
 }

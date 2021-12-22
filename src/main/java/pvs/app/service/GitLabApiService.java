@@ -52,13 +52,13 @@ public class GitLabApiService {
         return this.gitLabApi.getRepositoryApi().getBranches(projectID);
     }
 
-    public List<String> getBranchesName(String owner, String name) throws GitLabApiException {
+    public List<String> getBranchNameList(String owner, String name) throws GitLabApiException {
         List<Branch> branches = getBranches(owner, name);
-        List<String> branchesName = new ArrayList<>();
+        List<String> branchNameList = new ArrayList<>();
         for (Branch branch: branches) {
-            branchesName.add(branch.getName());
+            branchNameList.add(branch.getName());
         }
-        return branchesName;
+        return branchNameList;
     }
 
     private List<Commit> getCommitsWithBranchFromGitlab(Object projectIdOrPath, String branchName) throws ParseException, GitLabApiException {
