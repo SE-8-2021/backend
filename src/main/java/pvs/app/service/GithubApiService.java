@@ -110,7 +110,7 @@ public class GithubApiService {
                 .map(ref -> ref.get("edges"));
 
         if (paginationInfo.isPresent()) {
-            for (JsonNode objNode: paginationInfo.get()) {
+            for (JsonNode objNode : paginationInfo.get()) {
                 Optional<JsonNode> branchName = Optional.ofNullable(objNode)
                         .map(branch -> branch.get("node"))
                         .map(node -> node.get("name"));
@@ -119,7 +119,7 @@ public class GithubApiService {
                         .map(node -> node.get("target"))
                         .map(target -> target.get("history"));
 
-                if(branchName.isPresent() && commitsFromABranch.isPresent()) {
+                if (branchName.isPresent() && commitsFromABranch.isPresent()) {
                     final double totalCount = commitsFromABranch.get().get("totalCount").asDouble();
                     List<GithubCommitLoaderThread> githubCommitLoaderThreadList = new ArrayList<>();
 
@@ -157,7 +157,7 @@ public class GithubApiService {
         }
     }
 
-    public List<String> getBranchNameList(String owner, String name, Date lastUpdate) throws IOException{
+    public List<String> getBranchNameList(String owner, String name, Date lastUpdate) throws IOException {
         this.setGraphQlGetCommitsTotalCountAndCursorQuery(owner, name, lastUpdate);
 
         List<String> branchNameList = new ArrayList<>();
