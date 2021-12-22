@@ -48,7 +48,7 @@ public class GitLabCommitLoaderThread extends Thread {
             gitlabCommitDTO.setAuthor(Optional.ofNullable(commitJsonNode.get("authorName")));
             if (this.gitlabCommitService.checkIfExist(gitlabCommitDTO)) {
                 Thread.currentThread().interrupt();
-            }else {
+            } else {
                 System.out.println("---------------------------inserting");
                 synchronized (lock) {
                     gitlabCommitService.save(gitlabCommitDTO);

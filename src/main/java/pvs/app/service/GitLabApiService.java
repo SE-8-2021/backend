@@ -1,7 +1,10 @@
 package pvs.app.service;
 
 import org.gitlab4j.api.*;
-import org.gitlab4j.api.models.*;
+import org.gitlab4j.api.models.Branch;
+import org.gitlab4j.api.models.Commit;
+import org.gitlab4j.api.models.CommitStats;
+import org.gitlab4j.api.models.Issue;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import pvs.app.dto.GitLabIssueDTO;
@@ -11,15 +14,17 @@ import reactor.util.annotation.Nullable;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class GitLabApiService {
 
     private final GitLabCommitService gitlabCommitService;
-    private GitLabApi gitLabApi;
     private final CommitsApi commitsApi;
     private final IssuesApi issuesApi;
+    private GitLabApi gitLabApi;
     private Object projectID = null;
 
     public GitLabApiService(WebClient.Builder webClientBuilder, GitLabCommitService gitlabCommitService) {
@@ -55,7 +60,7 @@ public class GitLabApiService {
     public List<String> getBranchNameList(String owner, String name) throws GitLabApiException {
         List<Branch> branches = getBranches(owner, name);
         List<String> branchNameList = new ArrayList<>();
-        for (Branch branch: branches) {
+        for (Branch branch : branches) {
             branchNameList.add(branch.getName());
         }
         return branchNameList;
@@ -108,7 +113,7 @@ public class GitLabApiService {
     }
 
     @Nullable
-    public List<GitLabIssueDTO> getIssuesFromGitlab(String owner, String name) throws GitLabApiException, InterruptedException{
+    public List<GitLabIssueDTO> getIssuesFromGitlab(String owner, String name) throws GitLabApiException, InterruptedException {
         getProjectID(owner, name);
         List<GitLabIssueDTO> gitLabIssueDTOList = new ArrayList<>();
         List<Issue> issues = this.issuesApi.getIssues(projectID);
