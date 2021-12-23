@@ -27,6 +27,7 @@ public class GithubCommitDTO {
     private int changeFiles;
     private String authorName;
     private String authorEmail;
+    private String branchName;
 
 
     public void setCommittedDate(Date committedDate) {

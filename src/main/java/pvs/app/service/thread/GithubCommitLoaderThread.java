@@ -19,13 +19,15 @@ public class GithubCommitLoaderThread extends Thread {
     private final GithubCommitService githubCommitService;
     private final String repoOwner;
     private final String repoName;
+    private final String branchName;
     private final String cursor;
     private final WebClient webClient;
 
-    public GithubCommitLoaderThread(WebClient webClient, GithubCommitService githubCommitService, String repoOwner, String repoName, String cursor) {
+    public GithubCommitLoaderThread(WebClient webClient, GithubCommitService githubCommitService, String repoOwner, String repoName, String branchName, String cursor) {
         this.githubCommitService = githubCommitService;
         this.repoOwner = repoOwner;
         this.repoName = repoName;
+        this.branchName = branchName;
         this.cursor = cursor;
         this.webClient = webClient;
     }
@@ -34,7 +36,7 @@ public class GithubCommitLoaderThread extends Thread {
     public void run() {
         Map<String, Object> graphQlQuery = new HashMap<>();
         graphQlQuery.put("query", "{repository(owner: \"" + this.repoOwner + "\", name:\"" + this.repoName + "\") {" +
-                "defaultBranchRef {" +
+                "ref(qualifiedName: \"" + this.branchName + "\") {" +
                 "target {" +
                 "... on Commit {" +
                 "history (last:100, before: \"" + this.cursor + "\") {" +
@@ -76,8 +78,10 @@ public class GithubCommitLoaderThread extends Thread {
                 GithubCommitDTO githubCommitDTO = new GithubCommitDTO();
                 githubCommitDTO.setRepoOwner(repoOwner);
                 githubCommitDTO.setRepoName(repoName);
+                githubCommitDTO.setBranchName(branchName);
                 githubCommitDTO.setAdditions(Integer.parseInt(entity.get("additions").toString()));
                 githubCommitDTO.setDeletions(Integer.parseInt(entity.get("deletions").toString()));
+                githubCommitDTO.setChangeFiles(Integer.parseInt(entity.get("changedFiles").toString()));
                 githubCommitDTO.setCommittedDate(entity.get("committedDate"));
                 githubCommitDTO.setAuthor(Optional.ofNullable(entity.get("author")));
 
