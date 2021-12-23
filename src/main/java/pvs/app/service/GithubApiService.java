@@ -41,13 +41,20 @@ public class GithubApiService {
         String since = dateToISO8601(lastUpdate);
         Map<String, Object> graphQl = new HashMap<>();
         graphQl.put("query", "{repository(owner: \"" + owner + "\", name:\"" + name + "\") {" +
-                "defaultBranchRef {" +
+                "refs(refPrefix: \"refs/heads/\", orderBy: {direction: DESC, field: TAG_COMMIT_DATE}, first: 100) {" +
+                "edges{" +
+                "node{" +
+                "... on Ref{" +
+                "name\n" +
                 "target {" +
                 "... on Commit {" +
                 "history (since: \"" + since + "\") {" +
                 "totalCount\n" +
                 "pageInfo {" +
                 "startCursor" +
+                "}" +
+                "}" +
+                "}" +
                 "}" +
                 "}" +
                 "}" +
@@ -99,37 +106,86 @@ public class GithubApiService {
         Optional<JsonNode> paginationInfo = Optional.ofNullable(mapper.readTree(responseJson))
                 .map(resp -> resp.get("data"))
                 .map(data -> data.get("repository"))
-                .map(repo -> repo.get("defaultBranchRef"))
-                .map(branch -> branch.get("target"))
-                .map(tag -> tag.get("history"));
+                .map(repo -> repo.get("refs"))
+                .map(ref -> ref.get("edges"));
 
         if (paginationInfo.isPresent()) {
-            double totalCount = paginationInfo.get().get("totalCount").asInt();
-            List<GithubCommitLoaderThread> githubCommitLoaderThreadList = new ArrayList<>();
+            for (JsonNode objNode : paginationInfo.get()) {
+                Optional<JsonNode> branchName = Optional.ofNullable(objNode)
+                        .map(branch -> branch.get("node"))
+                        .map(node -> node.get("name"));
+                Optional<JsonNode> commitsFromABranch = Optional.ofNullable(objNode)
+                        .map(branch -> branch.get("node"))
+                        .map(node -> node.get("target"))
+                        .map(target -> target.get("history"));
 
-            if (totalCount != 0) {
-                String cursor = paginationInfo.get().get("pageInfo").get("startCursor").textValue()
-                        .split(" ")[0];
-                for (int i = 1; i <= Math.ceil(totalCount / 100); i++) {
-                    GithubCommitLoaderThread githubCommitLoaderThread =
-                            new GithubCommitLoaderThread(
-                                    this.webClient,
-                                    this.githubCommitService,
-                                    owner,
-                                    name,
-                                    cursor + " " + (i * 100));
-                    githubCommitLoaderThreadList.add(githubCommitLoaderThread);
-                    githubCommitLoaderThread.start();
-                }
+                if (branchName.isPresent() && commitsFromABranch.isPresent()) {
+                    final double totalCount = commitsFromABranch.get().get("totalCount").asDouble();
+                    List<GithubCommitLoaderThread> githubCommitLoaderThreadList = new ArrayList<>();
 
-                for (GithubCommitLoaderThread thread : githubCommitLoaderThreadList) {
-                    thread.join();
+                    if (totalCount != 0) {
+                        String cursor = commitsFromABranch
+                                .get()
+                                .get("pageInfo")
+                                .get("startCursor")
+                                .textValue()
+                                .split(" ")[0];
+                        final int ThreadSplittingFactor = 100;
+                        final double totalThreadAmount = Math.ceil(totalCount / ThreadSplittingFactor);
+                        for (int threadNumber = 1; threadNumber <= totalThreadAmount; threadNumber++) {
+                            GithubCommitLoaderThread githubCommitLoaderThread =
+                                    new GithubCommitLoaderThread(
+                                            this.webClient,
+                                            this.githubCommitService,
+                                            owner,
+                                            name,
+                                            branchName.get().asText(),
+                                            cursor + " " + (threadNumber * 100));
+                            githubCommitLoaderThreadList.add(githubCommitLoaderThread);
+                            githubCommitLoaderThread.start();
+                        }
+
+                        for (GithubCommitLoaderThread thread : githubCommitLoaderThreadList) {
+                            thread.join();
+                        }
+                    }
                 }
             }
             return true;
         } else {
             return false;
         }
+    }
+
+    public List<String> getBranchNameList(String owner, String name, Date lastUpdate) throws IOException {
+        this.setGraphQlGetCommitsTotalCountAndCursorQuery(owner, name, lastUpdate);
+
+        List<String> branchNameList = new ArrayList<>();
+
+        String responseJson = Objects.requireNonNull(this.webClient.post()
+                        .body(BodyInserters.fromObject(this.graphQlQuery))
+                        .exchange()
+                        .block())
+                .bodyToMono(String.class)
+                .block();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        Optional<JsonNode> paginationInfo = Optional.ofNullable(mapper.readTree(responseJson))
+                .map(resp -> resp.get("data"))
+                .map(data -> data.get("repository"))
+                .map(repo -> repo.get("refs"))
+                .map(ref -> ref.get("edges"));
+
+        if (paginationInfo.isPresent()) {
+            for (JsonNode objNode : paginationInfo.get()) {
+                Optional<JsonNode> branchName = Optional.ofNullable(objNode)
+                        .map(branch -> branch.get("node"))
+                        .map(node -> node.get("name"));
+                branchName.ifPresent(jsonNode -> branchNameList.add(jsonNode.asText()));
+            }
+        }
+        return branchNameList;
     }
 
     public List<GithubIssueDTO> getIssuesFromGithub(String owner, String name) throws IOException, InterruptedException {
