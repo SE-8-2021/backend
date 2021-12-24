@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pvs.app.dto.GithubCommitDTO;
 import pvs.app.dto.GithubIssueDTO;
+import pvs.app.dto.GithubPullRequestDTO;
 import pvs.app.service.GithubApiService;
 import pvs.app.service.GithubCommitService;
 
@@ -112,6 +113,36 @@ public class GithubApiController {
             String githubIssueDTOsJson = objectMapper.writeValueAsString(githubIssueDTOs);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(githubIssueDTOsJson);
+        } catch (IOException e) {
+            logger.debug(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(exceptionMessage);
+        }
+    }
+
+    @GetMapping("/github/pullRequests/{repoOwner}/{repoName}")
+    public ResponseEntity<String> getPullRequests(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        List<GithubPullRequestDTO> githubPullRequestDTOs;
+
+        try {
+            githubPullRequestDTOs = githubApiService.getPullRequestMetricsFromGithub(repoOwner, repoName);
+            if (githubPullRequestDTOs.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("cannot get pull request data");
+            }
+        } catch (InterruptedException | IOException e) {
+            logger.debug(e.getMessage());
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(exceptionMessage);
+        }
+
+        try {
+            String githubPullRequestDTOsJson = objectMapper.writeValueAsString(githubPullRequestDTOs);
+            return ResponseEntity.status(HttpStatus.OK).body(githubPullRequestDTOsJson);
         } catch (IOException e) {
             logger.debug(e.getMessage());
             e.printStackTrace();
