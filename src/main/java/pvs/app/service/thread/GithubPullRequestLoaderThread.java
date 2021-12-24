@@ -30,8 +30,8 @@ public class GithubPullRequestLoaderThread extends Thread{
         githubPullRequestDTO.setRepoOwner(repoOwner);
         githubPullRequestDTO.setRepoName(repoName);
         if (createdAt != null) { githubPullRequestDTO.setCreatedAt(createdAt); }
-        if (closedAt != null) { githubPullRequestDTO.setCreatedAt(closedAt); }
-        if (mergedAt != null) { githubPullRequestDTO.setCreatedAt(mergedAt); }
+        if (closedAt != null) { githubPullRequestDTO.setClosedAt(closedAt); }
+        if (mergedAt != null) { githubPullRequestDTO.setMergedAt(mergedAt); }
         synchronized (lock) {
             githubPullRequestDTOList.add(githubPullRequestDTO);
         }

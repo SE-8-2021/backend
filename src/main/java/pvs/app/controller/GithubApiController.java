@@ -130,7 +130,7 @@ public class GithubApiController {
         try {
             githubPullRequestDTOs = githubApiService.getPullRequestMetricsFromGithub(repoOwner, repoName);
             if (githubPullRequestDTOs.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("cannot get pull request data");
+                return ResponseEntity.status(HttpStatus.OK).body(null);
             }
         } catch (InterruptedException | IOException e) {
             logger.debug(e.getMessage());
