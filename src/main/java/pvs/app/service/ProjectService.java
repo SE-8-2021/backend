@@ -133,6 +133,20 @@ public class ProjectService {
         projectDAO.save(project);
         return true;
     }
+  
+    public boolean addTrelloBoard(AddTrelloBoardDTO addTrelloBoardDTO) {
+        Optional<Project> projectOptional = projectDAO.findById(addTrelloBoardDTO.getProjectId());
+        if (projectOptional.isEmpty()) return false;
+
+        Project project = projectOptional.get();
+        String url = addTrelloBoardDTO.getRepositoryURL();
+        Repository repository = new Repository();
+        repository.setUrl(url);
+        repository.setType("trello");
+        project.getRepositorySet().add(repository);
+        projectDAO.save(project);
+        return true;
+    }
 
     // toggle removed attribute to true
     public boolean removeProjectById(Long projectId) {
