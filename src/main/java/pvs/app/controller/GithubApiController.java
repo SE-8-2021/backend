@@ -17,7 +17,7 @@ import pvs.app.service.GithubApiService;
 import pvs.app.service.GithubCommitService;
 
 import java.io.IOException;
-import java.util.Calendar;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -40,15 +40,8 @@ public class GithubApiController {
     @PostMapping("/github/commits/{repoOwner}/{repoName}")
     public ResponseEntity<String> postCommits(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
         boolean callAPISuccess;
-        Date lastUpdate;
         GithubCommitDTO githubCommitDTO = githubCommitService.getLastCommit(repoOwner, repoName);
-        if (null == githubCommitDTO) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(1970, Calendar.JANUARY, 1);
-            lastUpdate = calendar.getTime();
-        } else {
-            lastUpdate = githubCommitDTO.getCommittedDate();
-        }
+        final Date lastUpdate = githubCommitDTO == null ? Date.from(Instant.ofEpochSecond(0)) : githubCommitDTO.getCommittedDate();
 
         try {
             callAPISuccess = githubApiService.getCommitsFromGithub(repoOwner, repoName, lastUpdate);
@@ -86,6 +79,37 @@ public class GithubApiController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(exceptionMessage);
+        }
+    }
+
+    @GetMapping("/github/branchList/{repoOwner}/{repoName}")
+    public ResponseEntity<List<String>> getBranchList(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
+        GithubCommitDTO githubCommitDTO = githubCommitService.getLastCommit(repoOwner, repoName);
+        final Date lastUpdate = githubCommitDTO == null ? Date.from(Instant.ofEpochSecond(0)) : githubCommitDTO.getCommittedDate();
+
+        try {
+            List<String> branchNameList = this.githubApiService.getBranchNameList(repoOwner, repoName, lastUpdate);
+            if (branchNameList.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(branchNameList);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @GetMapping("/github/commits/{repoOwner}/{repoName}/{branchName}")
+    public ResponseEntity<String> getCommitsOfBranch(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName, @PathVariable("branchName") String branchName) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<GithubCommitDTO> githubCommitDTOS = this.githubCommitService.getCommitsOfSpecificBranch(repoOwner, repoName, branchName);
+        try {
+            String githubCommitDTOsJson = objectMapper.writeValueAsString(githubCommitDTOS);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(githubCommitDTOsJson);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Get commits from branches failed");
         }
     }
 

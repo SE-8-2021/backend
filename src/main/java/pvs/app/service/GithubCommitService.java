@@ -46,4 +46,16 @@ public class GithubCommitService {
         dto.setCommittedDate(githubCommit.getCommittedDate());
         return dto;
     }
+
+    public List<GithubCommitDTO> getCommitsOfSpecificBranch(String repoOwner, String repoName, String branchName) {
+        List<GithubCommit> entities = githubCommitDAO.findByRepoOwnerAndRepoNameAndBranchName(repoOwner, repoName, branchName);
+        List<GithubCommitDTO> githubCommitDTOs = new LinkedList<>();
+
+        for (GithubCommit githubCommit : entities) {
+            GithubCommitDTO dto = modelMapper.map(githubCommit, GithubCommitDTO.class);
+            dto.setCommittedDate(githubCommit.getCommittedDate());
+            githubCommitDTOs.add(dto);
+        }
+        return githubCommitDTOs;
+    }
 }
