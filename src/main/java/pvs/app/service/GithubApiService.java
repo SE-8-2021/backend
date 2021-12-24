@@ -74,9 +74,6 @@ public class GithubApiService {
         graphQl.put("query", "{repository(owner: \"" + owner + "\", name:\"" + name + "\") {" +
                 "pullRequests (first: 100) {" +
                 "totalCount\n" +
-//                "pageInfo {" +
-//                "startCursor\n" +
-//                "}" +
                 "edges {" +
                 "node {" +
                 "author {" +
@@ -198,7 +195,6 @@ public class GithubApiService {
         } else {
             return null;
         }
-        getPullRequestMetricsFromGithub(owner, name);
         return githubIssueDTOList;
     }
 
@@ -226,19 +222,21 @@ public class GithubApiService {
 
             if (0 != totalCount) {
                 Optional<JsonNode> requestNode = paginationInfo.map(request -> request.get("edges"));
-                for (JsonNode objNode: requestNode.get()) {
-                    GithubPullRequestLoaderThread githubPullRequestLoaderThread =
-                            new GithubPullRequestLoaderThread(
-                                    githubPullRequestDTOs,
-                                    owner,
-                                    name,
-                                    objNode);
-                    githubPullRequestLoaderThreadList.add(githubPullRequestLoaderThread);
-                    githubPullRequestLoaderThread.start();
-                }
+                if (requestNode.isPresent()) {
+                    for (JsonNode objNode: requestNode.get()) {
+                        GithubPullRequestLoaderThread githubPullRequestLoaderThread =
+                                new GithubPullRequestLoaderThread(
+                                        githubPullRequestDTOs,
+                                        owner,
+                                        name,
+                                        objNode);
+                        githubPullRequestLoaderThreadList.add(githubPullRequestLoaderThread);
+                        githubPullRequestLoaderThread.start();
+                    }
 
-                for (GithubPullRequestLoaderThread thread : githubPullRequestLoaderThreadList) {
-                    thread.join();
+                    for (GithubPullRequestLoaderThread thread : githubPullRequestLoaderThreadList) {
+                        thread.join();
+                    }
                 }
             }
         } else {
