@@ -67,9 +67,10 @@ public class GitLabApiService {
     }
 
     private List<Commit> getCommitsWithBranchFromGitlab(Object projectIdOrPath, String branchName) throws ParseException, GitLabApiException {
+        // TODO: Add two input variables(since, until) to make it flexible
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String dateString_01 = "2019-01-01 00:00:00";
-        String dateString_02 = "2025-01-01 00:00:00";
+        String dateString_01 = "1990-01-01 00:00:00";
+        String dateString_02 = "2030-01-01 00:00:00";
         Date since = sdf.parse(dateString_01);
         Date until = sdf.parse(dateString_02);
         return this.commitsApi.getCommits(projectIdOrPath, branchName, since, until);
