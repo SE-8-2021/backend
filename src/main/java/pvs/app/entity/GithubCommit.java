@@ -1,6 +1,6 @@
 package pvs.app.entity;
 
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -8,7 +8,10 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 public class GithubCommit {
 
     @Id
@@ -42,7 +45,11 @@ public class GithubCommit {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "repository_id")
+    @ToString.Exclude
     private Repository repository;
+
+    @NotNull
+    private String branchName;
 
     @Override
     public boolean equals(Object o) {
@@ -58,11 +65,12 @@ public class GithubCommit {
                 committedDate.equals(that.committedDate) &&
                 authorName.equals(that.authorName) &&
                 authorEmail.equals(that.authorEmail) &&
-                repository.equals(that.repository);
+                repository.equals(that.repository) &&
+                branchName.equals(that.branchName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, repoOwner, repoName, committedDate, additions, deletions, changeFiles, authorName, authorEmail, repository);
+        return Objects.hash(id, repoOwner, repoName, committedDate, additions, deletions, changeFiles, authorName, authorEmail, repository, branchName);
     }
 }
