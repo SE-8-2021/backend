@@ -21,18 +21,18 @@ import java.util.List;
 @Service
 public class GitLabApiService {
 
-    private final GitLabCommitService gitlabCommitService;
+    private final GitLabCommitService gitLabCommitService;
     private final CommitsApi commitsApi;
     private final IssuesApi issuesApi;
     private GitLabApi gitLabApi;
     private Object projectID = null;
 
-    public GitLabApiService(WebClient.Builder webClientBuilder, GitLabCommitService gitlabCommitService) {
+    public GitLabApiService(WebClient.Builder webClientBuilder, GitLabCommitService gitLabCommitService) {
         String token = System.getenv("PVS_GITLAB_TOKEN");
         this.gitLabApi = new GitLabApi("https://gitlab.com", Constants.TokenType.ACCESS, token);
         this.commitsApi = this.gitLabApi.getCommitsApi();
         this.issuesApi = this.gitLabApi.getIssuesApi();
-        this.gitlabCommitService = gitlabCommitService;
+        this.gitLabCommitService = gitLabCommitService;
         webClientBuilder.baseUrl("https://api.gitlab.com/")
                 .defaultHeader("Authorization", "Bearer " + token)
                 .build();
@@ -66,7 +66,7 @@ public class GitLabApiService {
         return branchNameList;
     }
 
-    private List<Commit> getCommitsWithBranchFromGitlab(Object projectIdOrPath, String branchName) throws ParseException, GitLabApiException {
+    private List<Commit> getCommitsFromOneBranchOfGitLab(Object projectIdOrPath, String branchName) throws ParseException, GitLabApiException {
         // TODO: Add two input variables(since, until) to make it flexible
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateString_01 = "1990-01-01 00:00:00";
@@ -76,11 +76,11 @@ public class GitLabApiService {
         return this.commitsApi.getCommits(projectIdOrPath, branchName, since, until);
     }
 
-    public Boolean getCommitsFromGitlab(String owner, String name) throws GitLabApiException, InterruptedException, ParseException {
+    public Boolean getCommitsFromGitLab(String owner, String name) throws GitLabApiException, InterruptedException, ParseException {
         getProjectID(owner, name);
         List<Branch> branches = getBranches(owner, name);
         for (Branch branch : branches) {
-            List<Commit> commits = getCommitsWithBranchFromGitlab(projectID, branch.getName());
+            List<Commit> commits = getCommitsFromOneBranchOfGitLab(projectID, branch.getName());
 
             if (commits.size() == 0) return false;
 
@@ -92,9 +92,9 @@ public class GitLabApiService {
             List<GitLabCommitLoaderThread> gitLabCommitLoaderThreadList = new ArrayList<>();
 
             for (int j = 0; j < commits.size(); j++) {
-                GitLabCommitLoaderThread gitlabCommitLoaderThread =
+                GitLabCommitLoaderThread gitLabCommitLoaderThread =
                         new GitLabCommitLoaderThread(
-                                this.gitlabCommitService,
+                                this.gitLabCommitService,
                                 owner, // repoOwner
                                 name,  // repoName
                                 branch.getName(), //branchName
@@ -102,8 +102,8 @@ public class GitLabApiService {
                                 commitStats.get(j),  // commit stats
                                 commitsApi.getDiff(projectID, commits.get(j).getId()).size() // changeFileCount
                         );
-                gitLabCommitLoaderThreadList.add(gitlabCommitLoaderThread);
-                gitlabCommitLoaderThread.start();
+                gitLabCommitLoaderThreadList.add(gitLabCommitLoaderThread);
+                gitLabCommitLoaderThread.start();
             }
 
             for (GitLabCommitLoaderThread thread : gitLabCommitLoaderThreadList) {
@@ -114,7 +114,7 @@ public class GitLabApiService {
     }
 
     @Nullable
-    public List<GitLabIssueDTO> getIssuesFromGitlab(String owner, String name) throws GitLabApiException, InterruptedException {
+    public List<GitLabIssueDTO> getIssuesFromGitLab(String owner, String name) throws GitLabApiException, InterruptedException {
         getProjectID(owner, name);
         List<GitLabIssueDTO> gitLabIssueDTOList = new ArrayList<>();
         List<Issue> issues = this.issuesApi.getIssues(projectID);
@@ -124,14 +124,14 @@ public class GitLabApiService {
         final List<GitLabIssueLoaderThread> gitLabIssueLoaderThreadList = new ArrayList<>();
 
         for (final Issue issue : issues) {
-            final GitLabIssueLoaderThread gitlabIssueLoaderThread =
+            final GitLabIssueLoaderThread gitLabIssueLoaderThread =
                     new GitLabIssueLoaderThread(
                             gitLabIssueDTOList,
                             owner,
                             name,
                             issue);
-            gitLabIssueLoaderThreadList.add(gitlabIssueLoaderThread);
-            gitlabIssueLoaderThread.start();
+            gitLabIssueLoaderThreadList.add(gitLabIssueLoaderThread);
+            gitLabIssueLoaderThread.start();
         }
 
         for (final GitLabIssueLoaderThread thread : gitLabIssueLoaderThreadList) {

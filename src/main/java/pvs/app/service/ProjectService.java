@@ -17,12 +17,12 @@ import java.util.Optional;
 public class ProjectService {
     private final ProjectDAO projectDAO;
     private final GithubApiService githubApiService;
-    private final GitLabApiService gitlabApiService;
+    private final GitLabApiService gitLabApiService;
 
-    public ProjectService(ProjectDAO projectDAO, GithubApiService githubApiService, GitLabApiService gitlabApiService) {
+    public ProjectService(ProjectDAO projectDAO, GithubApiService githubApiService, GitLabApiService gitLabApiService) {
         this.projectDAO = projectDAO;
         this.githubApiService = githubApiService;
-        this.gitlabApiService = gitlabApiService;
+        this.gitLabApiService = gitLabApiService;
     }
 
     public void create(CreateProjectDTO projectDTO) throws IOException, GitLabApiException {
@@ -39,11 +39,11 @@ public class ProjectService {
             addGithubRepo(addGithubRepositoryDTO);
         }
 
-        if (!projectDTO.getGitlabRepositoryURL().trim().equals("")) {
+        if (!projectDTO.getGitLabRepositoryURL().trim().equals("")) {
             AddGitLabRepositoryDTO addGitlabRepositoryDTO = new AddGitLabRepositoryDTO();
             addGitlabRepositoryDTO.setProjectId(savedProject.getProjectId());
-            addGitlabRepositoryDTO.setRepositoryURL(projectDTO.getGitlabRepositoryURL());
-            addGitlabRepo(addGitlabRepositoryDTO);
+            addGitlabRepositoryDTO.setRepositoryURL(projectDTO.getGitLabRepositoryURL());
+            addGitLabRepo(addGitlabRepositoryDTO);
         }
 
         if (!projectDTO.getSonarRepositoryURL().trim().equals("")) {
@@ -114,19 +114,19 @@ public class ProjectService {
         return true;
     }
 
-    public boolean addGitlabRepo(AddGitLabRepositoryDTO addGitlabRepositoryDTO) throws GitLabApiException {
-        Optional<Project> projectOptional = projectDAO.findById(addGitlabRepositoryDTO.getProjectId());
+    public boolean addGitLabRepo(AddGitLabRepositoryDTO addGitLabRepositoryDTO) throws GitLabApiException {
+        Optional<Project> projectOptional = projectDAO.findById(addGitLabRepositoryDTO.getProjectId());
         if (projectOptional.isEmpty()) return false;
 
         Project project = projectOptional.get();
-        String url = addGitlabRepositoryDTO.getRepositoryURL();
+        String url = addGitLabRepositoryDTO.getRepositoryURL();
         Repository repository = new Repository();
         repository.setUrl(url);
         repository.setType("gitlab");
         project.getRepositorySet().add(repository);
         String owner = url.split("/")[3];
         String projectName = url.split("/")[4];
-        String responseURL = gitlabApiService.getAvatarURL(owner, projectName);
+        String responseURL = gitLabApiService.getAvatarURL(owner, projectName);
         if (responseURL != null) {
             project.setAvatarURL(responseURL);
         }

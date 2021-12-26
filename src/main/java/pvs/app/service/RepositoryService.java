@@ -34,7 +34,7 @@ public class RepositoryService {
         return true;
     }
 
-    public boolean checkGitlabURL(String url) {
+    public boolean checkGitLabURL(String url) {
         return url.contains("gitlab.com");
     }
 
