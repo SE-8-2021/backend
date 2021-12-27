@@ -7,8 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import pvs.app.dto.GithubIssueDTO;
+import pvs.app.dto.GithubPullRequestDTO;
 import pvs.app.service.thread.GithubCommitLoaderThread;
 import pvs.app.service.thread.GithubIssueLoaderThread;
+import pvs.app.service.thread.GithubPullRequestLoaderThread;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -38,10 +40,11 @@ public class GithubApiService {
     }
 
     private void setGraphQlGetCommitsTotalCountAndCursorQuery(String owner, String name, Date lastUpdate) {
+        final int requestNum = 100;
         String since = dateToISO8601(lastUpdate);
         Map<String, Object> graphQl = new HashMap<>();
         graphQl.put("query", "{repository(owner: \"" + owner + "\", name:\"" + name + "\") {" +
-                "refs(refPrefix: \"refs/heads/\", orderBy: {direction: DESC, field: TAG_COMMIT_DATE}, first: 100) {" +
+                "refs(refPrefix: \"refs/heads/\", orderBy: {direction: DESC, field: TAG_COMMIT_DATE}, first: " + requestNum + ") {" +
                 "edges{" +
                 "node{" +
                 "... on Ref{" +
@@ -65,10 +68,32 @@ public class GithubApiService {
     }
 
     private void setGraphQlGetIssuesTotalCountQuery(String owner, String name) {
+        final int requestNum = 100;
         Map<String, Object> graphQl = new HashMap<>();
         graphQl.put("query", "{repository(owner: \"" + owner + "\", name:\"" + name + "\") {" +
-                "issues (first: 100) {" +
+                "issues (first: " + requestNum + ") {" +
                 "totalCount" +
+                "}" +
+                "}}");
+        this.graphQlQuery = graphQl;
+    }
+
+    private void setGraphQlGetPullRequestQuery(String owner, String name) {
+        final int requestNum = 100;
+        Map<String, Object> graphQl = new HashMap<>();
+        graphQl.put("query", "{repository(owner: \"" + owner + "\", name:\"" + name + "\") {" +
+                "pullRequests (first: " + requestNum + ") {" +
+                "totalCount\n" +
+                "edges {" +
+                "node {" +
+                "author {" +
+                "login\n" +
+                "}" +
+                "createdAt\n" +
+                "closedAt\n" +
+                "mergedAt\n" +
+                "}" +
+                "}" +
                 "}" +
                 "}}");
         this.graphQlQuery = graphQl;
@@ -210,7 +235,7 @@ public class GithubApiService {
             double totalCount = paginationInfo.get().get("totalCount").asInt();
             List<GithubIssueLoaderThread> githubIssueLoaderThreadList = new ArrayList<>();
 
-            if (0 != totalCount) {
+            if (totalCount > 0) {
                 for (int i = 1; i <= Math.ceil(totalCount / 100); i++) {
                     GithubIssueLoaderThread githubIssueLoaderThread =
                             new GithubIssueLoaderThread(
@@ -230,6 +255,53 @@ public class GithubApiService {
             return null;
         }
         return githubIssueDTOList;
+    }
+
+    public List<GithubPullRequestDTO> getPullRequestMetricsFromGithub(String owner, String name) throws IOException, InterruptedException {
+        List<GithubPullRequestDTO> githubPullRequestDTOs = new ArrayList<>();
+        this.setGraphQlGetPullRequestQuery(owner, name);
+
+        String responseJson = Objects.requireNonNull(this.webClient.post()
+                        .body(BodyInserters.fromObject(this.graphQlQuery))
+                        .exchange()
+                        .block())
+                .bodyToMono(String.class)
+                .block();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        Optional<JsonNode> paginationInfo = Optional.ofNullable(mapper.readTree(responseJson))
+                .map(resp -> resp.get("data"))
+                .map(data -> data.get("repository"))
+                .map(repo -> repo.get("pullRequests"));
+
+        if (paginationInfo.isPresent()) {
+            int totalCount = paginationInfo.get().get("totalCount").asInt();
+            List<GithubPullRequestLoaderThread> githubPullRequestLoaderThreadList = new ArrayList<>();
+
+            if (totalCount > 0) {
+                Optional<JsonNode> requestNode = paginationInfo.map(request -> request.get("edges"));
+                if (requestNode.isPresent()) {
+                    for (JsonNode objNode: requestNode.get()) {
+                        GithubPullRequestLoaderThread githubPullRequestLoaderThread =
+                                new GithubPullRequestLoaderThread(
+                                        githubPullRequestDTOs,
+                                        owner,
+                                        name,
+                                        objNode);
+                        githubPullRequestLoaderThreadList.add(githubPullRequestLoaderThread);
+                        githubPullRequestLoaderThread.start();
+                    }
+
+                    for (GithubPullRequestLoaderThread thread : githubPullRequestLoaderThreadList) {
+                        thread.join();
+                    }
+                }
+            }
+        } else {
+            return null;
+        }
+        return githubPullRequestDTOs;
     }
 
     public JsonNode getAvatarURL(String owner) throws IOException {
