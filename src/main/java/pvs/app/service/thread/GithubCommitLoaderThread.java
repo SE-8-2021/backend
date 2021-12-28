@@ -69,7 +69,7 @@ public class GithubCommitLoaderThread extends Thread {
             Optional<JsonNode> commits = Optional.ofNullable(mapper.readTree(responseJson))
                     .map(resp -> resp.get("data"))
                     .map(data -> data.get("repository"))
-                    .map(repo -> repo.get("defaultBranchRef"))
+                    .map(repo -> repo.get("ref"))
                     .map(branch -> branch.get("target"))
                     .map(tag -> tag.get("history"))
                     .map(hist -> hist.get("nodes"));
