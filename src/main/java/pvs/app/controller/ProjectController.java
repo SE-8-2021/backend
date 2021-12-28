@@ -55,7 +55,7 @@ public class ProjectController {
 
     @GetMapping("/repository/gitlab/check")
     public ResponseEntity<String> checkGitLabURL(@RequestParam("url") String url) {
-        if (repositoryService.checkGitlabURL(url)) {
+        if (repositoryService.checkGitLabURL(url)) {
             return ResponseEntity.status(HttpStatus.OK).body(successMessage);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
@@ -114,10 +114,10 @@ public class ProjectController {
     }
 
     @PostMapping("/project/{projectId}/repository/gitlab")
-    public ResponseEntity<String> addGitLabRepository(@RequestBody AddGitLabRepositoryDTO addGitlabRepositoryDTO) {
+    public ResponseEntity<String> addGitLabRepository(@RequestBody AddGitLabRepositoryDTO addGitLabRepositoryDTO) {
         try {
-            if (repositoryService.checkGitlabURL(addGitlabRepositoryDTO.getRepositoryURL())) {
-                if (projectService.addGitlabRepo(addGitlabRepositoryDTO)) {
+            if (repositoryService.checkGitLabURL(addGitLabRepositoryDTO.getRepositoryURL())) {
+                if (projectService.addGitLabRepo(addGitLabRepositoryDTO)) {
                     return ResponseEntity.status(HttpStatus.OK).body(successMessage);
                 }
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);

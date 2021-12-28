@@ -12,16 +12,17 @@ import java.util.Optional;
 public class GitLabCommitLoaderThread extends Thread {
 
     private static final Object lock = new Object();
-    private final GitLabCommitService gitlabCommitService;
-    private final String repoOwner, repoName;
+    private final GitLabCommitService gitLabCommitService;
+    private final String repoOwner, repoName, branchName;
     private final String responseJson;
     private final CommitStats commitStats;
     private final Integer changeFileCount;
 
-    public GitLabCommitLoaderThread(GitLabCommitService githubCommitService, String repoOwner, String repoName, String responseJson, CommitStats commitStats, Integer changeFileCount) {
-        this.gitlabCommitService = githubCommitService;
+    public GitLabCommitLoaderThread(GitLabCommitService gitLabCommitService, String repoOwner, String repoName, String branchName, String responseJson, CommitStats commitStats, Integer changeFileCount) {
+        this.gitLabCommitService = gitLabCommitService;
         this.repoOwner = repoOwner;
         this.repoName = repoName;
+        this.branchName = branchName;
         this.responseJson = responseJson;
         this.commitStats = commitStats;
         this.changeFileCount = changeFileCount;
@@ -34,22 +35,23 @@ public class GitLabCommitLoaderThread extends Thread {
         try {
             JsonNode commitJsonNode = jacksonJson.readTree(responseJson);
 
-            GitLabCommitDTO gitlabCommitDTO = new GitLabCommitDTO();
-            gitlabCommitDTO.setRepoOwner(repoOwner);
-            gitlabCommitDTO.setRepoName(repoName);
-            gitlabCommitDTO.setAuthorName(String.valueOf(commitJsonNode.get("authorName")));
-            gitlabCommitDTO.setAuthorEmail(String.valueOf(commitJsonNode.get("authorEmail")));
-            gitlabCommitDTO.setAdditions(commitStats.getAdditions());
-            gitlabCommitDTO.setDeletions(commitStats.getDeletions());
-            gitlabCommitDTO.setChangeFiles(changeFileCount);
-            gitlabCommitDTO.setCommittedDate(commitJsonNode.get("committedDate"));
-            gitlabCommitDTO.setAuthor(Optional.ofNullable(commitJsonNode.get("authorName")));
-            if (this.gitlabCommitService.checkIfExist(gitlabCommitDTO)) {
+            GitLabCommitDTO gitLabCommitDTO = new GitLabCommitDTO();
+            gitLabCommitDTO.setRepoOwner(repoOwner);
+            gitLabCommitDTO.setRepoName(repoName);
+            gitLabCommitDTO.setBranchName(branchName);
+            gitLabCommitDTO.setAuthorName(String.valueOf(commitJsonNode.get("authorName")));
+            gitLabCommitDTO.setAuthorEmail(String.valueOf(commitJsonNode.get("authorEmail")));
+            gitLabCommitDTO.setAdditions(commitStats.getAdditions());
+            gitLabCommitDTO.setDeletions(commitStats.getDeletions());
+            gitLabCommitDTO.setChangeFiles(changeFileCount);
+            gitLabCommitDTO.setCommittedDate(commitJsonNode.get("committedDate"));
+            gitLabCommitDTO.setAuthor(Optional.ofNullable(commitJsonNode.get("authorName")));
+            if (this.gitLabCommitService.checkIfExist(gitLabCommitDTO)) {
                 Thread.currentThread().interrupt();
-            }else {
+            } else {
                 System.out.println("---------------------------inserting");
                 synchronized (lock) {
-                    gitlabCommitService.save(gitlabCommitDTO);
+                    gitLabCommitService.save(gitLabCommitDTO);
                 }
                 System.out.println("---------------------------complete");
             }

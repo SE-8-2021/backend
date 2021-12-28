@@ -10,5 +10,7 @@ import java.util.List;
 public interface GitLabCommitDAO extends CrudRepository<GitlabCommit, Long> {
     List<GitlabCommit> findByRepoOwnerAndRepoName(String repoOwner, String repoName);
 
+    List<GitlabCommit> findByRepoOwnerAndRepoNameAndBranchName(String repoOwner, String repoName, String branchName);
+
     GitlabCommit findFirstByRepoOwnerAndRepoNameOrderByCommittedDateDesc(String repoOwner, String repoName);
 }

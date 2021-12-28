@@ -19,6 +19,7 @@ public class GitLabCommitDTO {
 
     private String repoOwner;
     private String repoName;
+    private String branchName;
     private Date committedDate;
     private int additions;
     private int deletions;

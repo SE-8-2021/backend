@@ -17,6 +17,7 @@ import pvs.app.service.GitLabApiService;
 import pvs.app.service.GitLabCommitService;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -24,21 +25,21 @@ import java.util.List;
 public class GitLabApiController {
 
     static final Logger logger = LogManager.getLogger(GitLabApiController.class.getName());
-    private final GitLabApiService gitlabApiService;
-    private final GitLabCommitService gitlabCommitService;
+    private final GitLabApiService gitLabApiService;
+    private final GitLabCommitService gitLabCommitService;
     @Value("${message.exception}")
     private String exceptionMessage;
 
-    public GitLabApiController(GitLabApiService gitlabApiService, GitLabCommitService gitlabCommitService) {
-        this.gitlabApiService = gitlabApiService;
-        this.gitlabCommitService = gitlabCommitService;
+    public GitLabApiController(GitLabApiService gitLabApiService, GitLabCommitService gitLabCommitService) {
+        this.gitLabApiService = gitLabApiService;
+        this.gitLabCommitService = gitLabCommitService;
     }
 
     @SneakyThrows
     @GetMapping("/gitlab/commits/{repoOwner}/{repoName}")
     public ResponseEntity<String> getCommits(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) throws GitLabApiException {
         ObjectMapper objectMapper = new ObjectMapper();
-        List<GitLabCommitDTO> gitLabCommitDTOS = gitlabCommitService.getAllCommits(repoOwner, repoName);
+        List<GitLabCommitDTO> gitLabCommitDTOS = gitLabCommitService.getAllCommits(repoOwner, repoName);
 
         try {
             String gitlabCommitDTOsJson = objectMapper.writeValueAsString(gitLabCommitDTOS);
@@ -56,7 +57,7 @@ public class GitLabApiController {
     @PostMapping("/gitlab/{username}/{password}")
     public ResponseEntity<String> oauth2login(@PathVariable("username") String username, @PathVariable("password") String password) {
         System.out.println("going to execute gitlab api..");
-        this.gitlabApiService.oauth2login(username, password);
+        this.gitLabApiService.oauth2login(username, password);
         return ResponseEntity.status(HttpStatus.OK).body("log in succeed");
     }
 
@@ -64,13 +65,11 @@ public class GitLabApiController {
     public ResponseEntity<String> getCommitsFromGitLab(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
         System.out.println("going to get commit from gitlab...");
         try {
-            if (this.gitlabApiService.getCommitsFromGitlab(repoOwner, repoName)) {
+            if (this.gitLabApiService.getCommitsFromGitLab(repoOwner, repoName)) {
                 return ResponseEntity.status(HttpStatus.OK).body("get commit from gitlab succeed");
-            } else {
-                return ResponseEntity.status(HttpStatus.OK).body("get commit from gitlab failed");
             }
-
-        } catch (InterruptedException | GitLabApiException e) {
+            return ResponseEntity.status(HttpStatus.OK).body("get commit from gitlab failed");
+        } catch (InterruptedException | GitLabApiException | ParseException e) {
             logger.debug(e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -86,7 +85,7 @@ public class GitLabApiController {
         List<GitLabIssueDTO> gitLabIssueDTOS;
 
         try {
-            gitLabIssueDTOS = gitlabApiService.getIssuesFromGitlab(repoOwner, repoName);
+            gitLabIssueDTOS = gitLabApiService.getIssuesFromGitLab(repoOwner, repoName);
         } catch (InterruptedException | GitLabApiException e) {
             logger.debug(e.getMessage());
             e.printStackTrace();
@@ -107,6 +106,34 @@ public class GitLabApiController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(exceptionMessage);
+        }
+    }
+
+    @GetMapping("/gitlab/branchList/{repoOwner}/{repoName}")
+    public ResponseEntity<List<String>> getBranchList(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
+        try {
+            List<String> branchNameList = this.gitLabApiService.getBranchNameList(repoOwner, repoName);
+            if (branchNameList.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(branchNameList);
+        } catch (GitLabApiException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @GetMapping("/gitlab/commits/{repoOwner}/{repoName}/{branchName}")
+    public ResponseEntity<String> getCommitsOfBranch(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName, @PathVariable("branchName") String branchName) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<GitLabCommitDTO> gitLabCommitDTOS = this.gitLabCommitService.getCommitsOfSpecificBranch(repoOwner, repoName, branchName);
+        try {
+            String gitLabCommitDTOsJson = objectMapper.writeValueAsString(gitLabCommitDTOS);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(gitLabCommitDTOsJson);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Get commits from branches failed");
         }
     }
 }
