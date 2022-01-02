@@ -121,9 +121,15 @@ public class GithubApiController {
 
         try {
             githubIssueDTOs = githubApiService.getIssuesFromGithub(repoOwner, repoName);
-            if (null == githubIssueDTOs) {
+
+            // Retry one time if the githubIssueDTOs is null
+            for (int retryCount = 1; retryCount <= 1; retryCount++){
+                if (githubIssueDTOs != null) break;
+                githubIssueDTOs = githubApiService.getIssuesFromGithub(repoOwner, repoName);
+            }
+            if (githubIssueDTOs == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("cannot get issue data");
+                        .body("Get issue data failed from GitHub api");
             }
         } catch (InterruptedException | IOException e) {
             logger.debug(e.getMessage());
@@ -153,8 +159,15 @@ public class GithubApiController {
 
         try {
             githubPullRequestDTOs = githubApiService.getPullRequestMetricsFromGithub(repoOwner, repoName);
-            if (githubPullRequestDTOs.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.OK).body(null);
+
+            // Retry one time if the githubPullRequestDTOs is null
+            for (int retryCount = 1; retryCount <= 1; retryCount++){
+                if (githubPullRequestDTOs != null) break;
+                githubPullRequestDTOs = githubApiService.getPullRequestMetricsFromGithub(repoOwner, repoName);
+            }
+            if (githubPullRequestDTOs == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Get pull request data failed from GitHub api");
             }
         } catch (InterruptedException | IOException e) {
             logger.debug(e.getMessage());
