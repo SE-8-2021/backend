@@ -117,13 +117,20 @@ public class GithubApiController {
     public ResponseEntity<String> getIssues(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        List<GithubIssueDTO> githubIssueDTOs;
+        List<GithubIssueDTO> githubIssueDTOs = null;
 
         try {
-            githubIssueDTOs = githubApiService.getIssuesFromGithub(repoOwner, repoName);
-            if (null == githubIssueDTOs) {
+            // Retry if the githubIssueDTOs is null
+            int retryCount = 0;
+            while (retryCount <= 5) {
+                githubIssueDTOs = githubApiService.getIssuesFromGithub(repoOwner, repoName);
+                if (githubIssueDTOs != null) break;
+                retryCount++;
+            }
+
+            if (githubIssueDTOs == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("cannot get issue data");
+                        .body("Get issue data failed from GitHub API");
             }
         } catch (InterruptedException | IOException e) {
             logger.debug(e.getMessage());
@@ -149,12 +156,20 @@ public class GithubApiController {
     public ResponseEntity<String> getPullRequests(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        List<GithubPullRequestDTO> githubPullRequestDTOs;
+        List<GithubPullRequestDTO> githubPullRequestDTOs = null;
 
         try {
-            githubPullRequestDTOs = githubApiService.getPullRequestMetricsFromGithub(repoOwner, repoName);
-            if (githubPullRequestDTOs.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.OK).body(null);
+            // Retry if the githubPullRequestDTOs is null
+            int retryCount = 0;
+            while (retryCount <= 5) {
+                githubPullRequestDTOs = githubApiService.getPullRequestMetricsFromGithub(repoOwner, repoName);
+                if (githubPullRequestDTOs != null) break;
+                retryCount++;
+            }
+
+            if (githubPullRequestDTOs == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Get pull request data failed from GitHub API");
             }
         } catch (InterruptedException | IOException e) {
             logger.debug(e.getMessage());
