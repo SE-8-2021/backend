@@ -122,14 +122,17 @@ public class GithubApiController {
         try {
             githubIssueDTOs = githubApiService.getIssuesFromGithub(repoOwner, repoName);
 
-            // Retry one time if the githubIssueDTOs is null
-            for (int retryCount = 1; retryCount <= 1; retryCount++){
+            // Retry if the githubIssueDTOs is null
+            int retryCount = 1;
+            while (retryCount <= 5) {
                 if (githubIssueDTOs != null) break;
                 githubIssueDTOs = githubApiService.getIssuesFromGithub(repoOwner, repoName);
+                retryCount++;
             }
+
             if (githubIssueDTOs == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Get issue data failed from GitHub api");
+                        .body("Get issue data failed from GitHub API");
             }
         } catch (InterruptedException | IOException e) {
             logger.debug(e.getMessage());
@@ -160,14 +163,17 @@ public class GithubApiController {
         try {
             githubPullRequestDTOs = githubApiService.getPullRequestMetricsFromGithub(repoOwner, repoName);
 
-            // Retry one time if the githubPullRequestDTOs is null
-            for (int retryCount = 1; retryCount <= 1; retryCount++){
+            // Retry if the githubPullRequestDTOs is null
+            int retryCount = 1;
+            while (retryCount <= 5) {
                 if (githubPullRequestDTOs != null) break;
                 githubPullRequestDTOs = githubApiService.getPullRequestMetricsFromGithub(repoOwner, repoName);
+                retryCount++;
             }
+
             if (githubPullRequestDTOs == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Get pull request data failed from GitHub api");
+                        .body("Get pull request data failed from GitHub API");
             }
         } catch (InterruptedException | IOException e) {
             logger.debug(e.getMessage());
