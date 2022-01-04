@@ -2,8 +2,6 @@ package pvs.app.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -16,9 +14,6 @@ import java.util.TimeZone;
 
 @Data
 public class GithubCommitDTO {
-
-    static final Logger logger = LogManager.getLogger(GithubCommitDTO.class.getName());
-
     private String repoOwner;
     private String repoName;
     private Date committedDate;

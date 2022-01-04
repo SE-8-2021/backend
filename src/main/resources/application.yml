@@ -5,27 +5,24 @@ server:
 
 message:
   exception: "exception error"
-  success: "你成功了!"
-  fail: "你失敗了!"
+  success: "success!"
+  fail: "fail!"
   invalid:
-    url: "你連URL都不會打嗎?"
+    url: "Invalid URL ..."
 
 webClient:
   baseUrl:
-    sonar: "http://localhost:9000/api"
+    sonar: "https://sonarcloud.io/api"
     github: "https://api.github.com/graphql"
     test: ""
-#
-#logging:
-#  config: classpath:log4j2.xml
 
 spring:
   profiles:
     active: test
   datasource:
-    url: jdbc:postgresql://localhost:5432/PVS
-    username: postgres
-    password: root
+    url: ${DB_URL}
+    username: ${PVS_DB_USER}
+    password: ${PVS_DB_PASS}
     driver-class-name: org.postgresql.Driver
   jpa:
     properties:

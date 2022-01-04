@@ -1,7 +1,5 @@
 package pvs.app.config;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -27,9 +25,6 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-    static final Logger logger = LogManager.getLogger(SecurityConfig.class.getName());
-
     @Qualifier("userDetailsServiceImpl")
     @Autowired
     private UserDetailsService userDetailsService;
@@ -55,7 +50,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 }
             });
         } catch (Exception e) {
-            logger.debug(e);
             e.printStackTrace();
         }
     }

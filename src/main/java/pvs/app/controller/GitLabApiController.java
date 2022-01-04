@@ -3,8 +3,6 @@ package pvs.app.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.gitlab4j.api.GitLabApiException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -23,8 +21,6 @@ import java.util.List;
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class GitLabApiController {
-
-    static final Logger logger = LogManager.getLogger(GitLabApiController.class.getName());
     private final GitLabApiService gitLabApiService;
     private final GitLabCommitService gitLabCommitService;
     @Value("${message.exception}")
@@ -46,7 +42,6 @@ public class GitLabApiController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(gitlabCommitDTOsJson);
         } catch (JsonProcessingException e) {
-            logger.debug(e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(exceptionMessage);
@@ -70,7 +65,6 @@ public class GitLabApiController {
             }
             return ResponseEntity.status(HttpStatus.OK).body("get commit from gitlab failed");
         } catch (InterruptedException | GitLabApiException | ParseException e) {
-            logger.debug(e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(exceptionMessage);
@@ -87,7 +81,6 @@ public class GitLabApiController {
         try {
             gitLabIssueDTOS = gitLabApiService.getIssuesFromGitLab(repoOwner, repoName);
         } catch (InterruptedException | GitLabApiException e) {
-            logger.debug(e.getMessage());
             e.printStackTrace();
             Thread.currentThread().interrupt();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -102,7 +95,6 @@ public class GitLabApiController {
             }
             return ResponseEntity.status(HttpStatus.OK).body("no issue data");
         } catch (IOException e) {
-            logger.debug(e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(exceptionMessage);

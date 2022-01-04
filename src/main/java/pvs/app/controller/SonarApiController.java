@@ -1,8 +1,6 @@
 package pvs.app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,8 +22,6 @@ import java.util.List;
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class SonarApiController {
-
-    static final Logger logger = LogManager.getLogger(SonarApiController.class.getName());
     private final SonarApiService sonarApiService;
     @Value("${message.exception}")
     private String exceptionMessage;
@@ -52,14 +48,13 @@ public class SonarApiController {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            logger.debug(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(exceptionMessage);
         }
     }
 
     @GetMapping("/sonar/{component}/bug")
-    public ResponseEntity<String> getBug(@PathVariable("component") String component) throws IOException {
+    public ResponseEntity<String> getBug(@PathVariable("component") String component) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             List<BugDTO> bugList = sonarApiService.getSonarBug(component);
@@ -74,14 +69,13 @@ public class SonarApiController {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            logger.debug(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(exceptionMessage);
         }
     }
 
     @GetMapping("/sonar/{component}/code_smell")
-    public ResponseEntity<String> getCodeSmell(@PathVariable("component") String component) throws IOException {
+    public ResponseEntity<String> getCodeSmell(@PathVariable("component") String component) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             List<CodeSmellDTO> codeSmellList = sonarApiService.getSonarCodeSmell(component);
@@ -96,14 +90,13 @@ public class SonarApiController {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            logger.debug(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(exceptionMessage);
         }
     }
 
     @GetMapping("/sonar/{component}/duplication")
-    public ResponseEntity<String> getDuplication(@PathVariable("component") String component) throws IOException {
+    public ResponseEntity<String> getDuplication(@PathVariable("component") String component) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             List<DuplicationDTO> duplicationList = sonarApiService.getDuplication(component);
@@ -118,7 +111,6 @@ public class SonarApiController {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            logger.debug(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(exceptionMessage);
         }

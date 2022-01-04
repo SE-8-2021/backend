@@ -3,8 +3,6 @@ package pvs.app.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,8 +22,6 @@ import java.util.List;
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class GithubApiController {
-
-    static final Logger logger = LogManager.getLogger(GithubApiController.class.getName());
     private final GithubApiService githubApiService;
     private final GithubCommitService githubCommitService;
     @Value("${message.exception}")
@@ -48,7 +44,6 @@ public class GithubApiController {
         } catch (InterruptedException | IOException e) {
             Thread.currentThread().interrupt();
             e.printStackTrace();
-            logger.debug(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(exceptionMessage);
         }
@@ -75,7 +70,6 @@ public class GithubApiController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(githubCommitDTOsJson);
         } catch (JsonProcessingException e) {
-            logger.debug(e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(exceptionMessage);
@@ -133,7 +127,6 @@ public class GithubApiController {
                         .body("Get issue data failed from GitHub API");
             }
         } catch (InterruptedException | IOException e) {
-            logger.debug(e.getMessage());
             e.printStackTrace();
             Thread.currentThread().interrupt();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -145,7 +138,6 @@ public class GithubApiController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(githubIssueDTOsJson);
         } catch (IOException e) {
-            logger.debug(e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(exceptionMessage);
@@ -172,7 +164,6 @@ public class GithubApiController {
                         .body("Get pull request data failed from GitHub API");
             }
         } catch (InterruptedException | IOException e) {
-            logger.debug(e.getMessage());
             e.printStackTrace();
             Thread.currentThread().interrupt();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -183,7 +174,6 @@ public class GithubApiController {
             String githubPullRequestDTOsJson = objectMapper.writeValueAsString(githubPullRequestDTOs);
             return ResponseEntity.status(HttpStatus.OK).body(githubPullRequestDTOsJson);
         } catch (IOException e) {
-            logger.debug(e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(exceptionMessage);

@@ -1,7 +1,5 @@
 package pvs.app.controller;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,9 +9,6 @@ import pvs.app.service.AuthService;
 
 @RestController
 public class AuthController {
-
-    static final Logger logger = LogManager.getLogger(AuthController.class.getName());
-
     @Autowired
     private AuthService authService;
 

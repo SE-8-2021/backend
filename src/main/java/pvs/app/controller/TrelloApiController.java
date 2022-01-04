@@ -1,7 +1,5 @@
 package pvs.app.controller;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,7 +14,6 @@ import pvs.app.service.TrelloApiService;
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class TrelloApiController {
-    static final Logger logger = LogManager.getLogger(TrelloApiController.class.getName());
     private final TrelloApiService trelloApiService;
     private final RepositoryService repositoryService;
     @Value("${message.exception}")

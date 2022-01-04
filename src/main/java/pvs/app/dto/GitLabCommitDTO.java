@@ -1,9 +1,9 @@
 package pvs.app.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import lombok.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -14,9 +14,6 @@ import java.util.Optional;
 @Setter
 @RequiredArgsConstructor
 public class GitLabCommitDTO {
-
-    static final Logger logger = LogManager.getLogger(GitLabCommitDTO.class.getName());
-
     private String repoOwner;
     private String repoName;
     private String branchName;

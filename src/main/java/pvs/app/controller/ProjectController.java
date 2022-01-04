@@ -1,7 +1,5 @@
 package pvs.app.controller;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.gitlab4j.api.GitLabApiException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -19,8 +17,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProjectController {
-
-    static final Logger logger = LogManager.getLogger(ProjectController.class.getName());
     private final ProjectService projectService;
     private final RepositoryService repositoryService;
     @Value("${message.exception}")
@@ -76,7 +72,6 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.OK).body(successMessage);
         } catch (IOException | GitLabApiException e) {
             e.printStackTrace();
-            logger.debug(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
         }
     }
@@ -93,7 +88,6 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
         } catch (Exception e) {
             e.printStackTrace();
-            logger.debug(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
         }
     }
