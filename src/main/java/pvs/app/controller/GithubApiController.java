@@ -117,16 +117,14 @@ public class GithubApiController {
     public ResponseEntity<String> getIssues(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        List<GithubIssueDTO> githubIssueDTOs;
+        List<GithubIssueDTO> githubIssueDTOs = null;
 
         try {
-            githubIssueDTOs = githubApiService.getIssuesFromGithub(repoOwner, repoName);
-
             // Retry if the githubIssueDTOs is null
-            int retryCount = 1;
+            int retryCount = 0;
             while (retryCount <= 5) {
-                if (githubIssueDTOs != null) break;
                 githubIssueDTOs = githubApiService.getIssuesFromGithub(repoOwner, repoName);
+                if (githubIssueDTOs != null) break;
                 retryCount++;
             }
 
@@ -158,16 +156,14 @@ public class GithubApiController {
     public ResponseEntity<String> getPullRequests(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        List<GithubPullRequestDTO> githubPullRequestDTOs;
+        List<GithubPullRequestDTO> githubPullRequestDTOs = null;
 
         try {
-            githubPullRequestDTOs = githubApiService.getPullRequestMetricsFromGithub(repoOwner, repoName);
-
             // Retry if the githubPullRequestDTOs is null
-            int retryCount = 1;
+            int retryCount = 0;
             while (retryCount <= 5) {
-                if (githubPullRequestDTOs != null) break;
                 githubPullRequestDTOs = githubApiService.getPullRequestMetricsFromGithub(repoOwner, repoName);
+                if (githubPullRequestDTOs != null) break;
                 retryCount++;
             }
 
