@@ -28,7 +28,6 @@ public class ProjectService {
     public void create(CreateProjectDTO projectDTO) throws IOException, GitLabApiException {
         Project savedProject;
         Project project = new Project();
-        System.out.println(projectDTO.getMemberId());
         project.setMemberId(projectDTO.getMemberId());
         project.setName(projectDTO.getProjectName());
         savedProject = projectDAO.save(project);
