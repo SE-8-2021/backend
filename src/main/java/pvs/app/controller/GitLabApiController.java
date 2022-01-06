@@ -115,8 +115,8 @@ public class GitLabApiController {
         }
     }
 
-    @GetMapping("/gitlab/commits/{repoOwner}/{repoName}/{branchName}")
-    public ResponseEntity<String> getCommitsOfBranch(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName, @PathVariable("branchName") String branchName) {
+    @GetMapping("/gitlab/commits")
+    public ResponseEntity<String> getCommitsOfBranch(@RequestParam("repoOwner") String repoOwner, @RequestParam("repoName") String repoName, @RequestParam("branchName") String branchName) {
         ObjectMapper objectMapper = new ObjectMapper();
         List<GitLabCommitDTO> gitLabCommitDTOS = this.gitLabCommitService.getCommitsOfSpecificBranch(repoOwner, repoName, branchName);
         try {
