@@ -66,14 +66,11 @@ public class ProjectController {
     }
 
     @PostMapping("/project")
-    public ResponseEntity<String> createProject(@RequestBody CreateProjectDTO projectDTO) {
-        try {
-            projectService.create(projectDTO);
+    public ResponseEntity<String> createProject(@RequestBody CreateProjectDTO createProjectDTO) {
+        if(projectService.create(createProjectDTO)) {
             return ResponseEntity.status(HttpStatus.OK).body(successMessage);
-        } catch (IOException | GitLabApiException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
         }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("project name exists");
     }
 
     @PostMapping("/project/{projectId}/repository/sonar")

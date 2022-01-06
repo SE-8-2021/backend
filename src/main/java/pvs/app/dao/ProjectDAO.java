@@ -13,4 +13,6 @@ public interface ProjectDAO extends CrudRepository<Project, Long> {
     List<Project> findAll();
 
     List<Project> findByMemberId(Long memberId);
+
+    Project findByMemberIdAndNameAndRemoved(Long memberId, String name, boolean removed);
 }

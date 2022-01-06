@@ -25,40 +25,19 @@ public class ProjectService {
         this.gitLabApiService = gitLabApiService;
     }
 
-    public void create(CreateProjectDTO projectDTO) throws IOException, GitLabApiException {
-        Project savedProject;
-        Project project = new Project();
-        project.setMemberId(1L);
-        project.setName(projectDTO.getProjectName());
-        savedProject = projectDAO.save(project);
-
-        if (!projectDTO.getGithubRepositoryURL().trim().equals("")) {
-            AddGithubRepositoryDTO addGithubRepositoryDTO = new AddGithubRepositoryDTO();
-            addGithubRepositoryDTO.setProjectId(savedProject.getProjectId());
-            addGithubRepositoryDTO.setRepositoryURL(projectDTO.getGithubRepositoryURL());
-            addGithubRepo(addGithubRepositoryDTO);
+    public boolean create(CreateProjectDTO createProjectDTO) {
+        // PVS has not had the register feature, so there is only one user that memberId is 1.
+        final Long memberId = 1L;
+        String projectName = createProjectDTO.getProjectName();
+        // Check if project name exist.
+        if(projectDAO.findByMemberIdAndNameAndRemoved(memberId, projectName, false) == null) {
+            Project project = new Project();
+            project.setMemberId(memberId);
+            project.setName(projectName);
+            projectDAO.save(project);
+            return true;
         }
-
-        if (!projectDTO.getGitLabRepositoryURL().trim().equals("")) {
-            AddGitLabRepositoryDTO addGitlabRepositoryDTO = new AddGitLabRepositoryDTO();
-            addGitlabRepositoryDTO.setProjectId(savedProject.getProjectId());
-            addGitlabRepositoryDTO.setRepositoryURL(projectDTO.getGitLabRepositoryURL());
-            addGitLabRepo(addGitlabRepositoryDTO);
-        }
-
-        if (!projectDTO.getSonarRepositoryURL().trim().equals("")) {
-            AddSonarRepositoryDTO addSonarRepositoryDTO = new AddSonarRepositoryDTO();
-            addSonarRepositoryDTO.setProjectId(savedProject.getProjectId());
-            addSonarRepositoryDTO.setRepositoryURL(projectDTO.getSonarRepositoryURL());
-            addSonarRepo(addSonarRepositoryDTO);
-        }
-
-        if (!projectDTO.getTrelloBoardURL().trim().equals("")) {
-            AddTrelloBoardDTO addTrelloBoardDTO = new AddTrelloBoardDTO();
-            addTrelloBoardDTO.setProjectId(savedProject.getProjectId());
-            addTrelloBoardDTO.setRepositoryURL(projectDTO.getSonarRepositoryURL());
-            addTrelloBoard(addTrelloBoardDTO);
-        }
+        return false;
     }
 
     public List<ResponseProjectDTO> getMemberProjects(Long memberId) {
