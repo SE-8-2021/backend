@@ -93,8 +93,8 @@ public class GithubApiController {
         }
     }
 
-    @GetMapping("/github/commits/{repoOwner}/{repoName}/{branchName}")
-    public ResponseEntity<String> getCommitsOfBranch(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName, @PathVariable("branchName") String branchName) {
+    @GetMapping("/github/commits")
+    public ResponseEntity<String> getCommitsOfBranch(@RequestParam("repoOwner") String repoOwner, @RequestParam("repoName") String repoName, @RequestParam("branchName") String branchName) {
         ObjectMapper objectMapper = new ObjectMapper();
         List<GithubCommitDTO> githubCommitDTOS = this.githubCommitService.getCommitsOfSpecificBranch(repoOwner, repoName, branchName);
         try {
