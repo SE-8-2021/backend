@@ -8,6 +8,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import pvs.app.dao.MemberDAO;
+import pvs.app.dto.MemberDTO;
+import pvs.app.entity.Member;
 import pvs.app.utils.JwtTokenUtil;
 
 @Service
@@ -19,12 +22,16 @@ public class AuthService {
 
     private final JwtTokenUtil jwtTokenUtil;
 
+    private final MemberDAO memberDAO;
+
     AuthService(AuthenticationManager authenticationManager,
                 @Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService,
-                JwtTokenUtil jwtTokenUtil) {
+                JwtTokenUtil jwtTokenUtil,
+                MemberDAO memberDAO) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.memberDAO = memberDAO;
     }
 
     public String login(String username, String password) {
@@ -33,5 +40,9 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         return jwtTokenUtil.generateToken(userDetails);
+    }
+
+    public Long getMemberId(String username) {
+        return this.memberDAO.findByUsername(username).getMemberId();
     }
 }
