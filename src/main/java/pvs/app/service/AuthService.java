@@ -9,8 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import pvs.app.dao.MemberDAO;
-import pvs.app.dto.MemberDTO;
-import pvs.app.entity.Member;
 import pvs.app.utils.JwtTokenUtil;
 
 @Service
