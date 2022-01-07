@@ -19,8 +19,7 @@ public class AuthController {
      */
     @PostMapping(value = "/auth/login")
     public String login(@RequestBody MemberDTO memberDTO) {
-        // FIXME remove simplified chinese comments
-        // 登录成功会返回Token给用户
+        // return jwt if login success
         return authService.login(memberDTO.getUsername(), memberDTO.getPassword());
     }
 
