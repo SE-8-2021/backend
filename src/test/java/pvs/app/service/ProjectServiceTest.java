@@ -22,6 +22,7 @@ import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
@@ -45,8 +46,6 @@ public class ProjectServiceTest {
     public void setup() throws IOException {
         projectDTO = new CreateProjectDTO();
         projectDTO.setProjectName("react");
-        projectDTO.setGithubRepositoryURL("https://github.com/facebook/react");
-        projectDTO.setSonarRepositoryURL("http://localhost:9000/dashboard?id=pvs-springboot");
 
         project = new Project();
         project.setProjectId(1L);
@@ -67,21 +66,12 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void create() throws IOException, GitLabApiException {
-        //context
-        when(githubApiService.getAvatarURL("facebook"))
-                .thenReturn(mockAvatar.orElse(null));
-
-        when(projectDAO.save(any(Project.class)))
+    public void createProjectsWithTheSameName() {
+        // when a project is active and has the same name
+        when(projectDAO.findByMemberIdAndNameAndRemoved(memberID, projectDTO.getProjectName(), false))
                 .thenReturn(project);
-        when(projectDAO.findById(1L))
-                .thenReturn(Optional.of(project));
 
-        //when
-        projectService.create(projectDTO);
-
-        //then
-        verify(githubApiService, times(1)).getAvatarURL("facebook");
+        assertFalse(projectService.create(projectDTO));
     }
 
     @Test
