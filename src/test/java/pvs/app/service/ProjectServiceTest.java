@@ -66,15 +66,6 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void createProjectsWithTheSameName() {
-        // when a project is active and has the same name
-        when(projectDAO.findByMemberIdAndNameAndRemoved(memberID, projectDTO.getProjectName(), false))
-                .thenReturn(project);
-
-        assertFalse(projectService.create(projectDTO));
-    }
-
-    @Test
     public void getMemberProjects() {
         //given
         project.setAvatarURL("https://avatars3.githubusercontent.com/u/17744001?u=038d9e068c4205d94c670d7d89fb921ec5b29782&v=4");

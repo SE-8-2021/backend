@@ -67,10 +67,8 @@ public class ProjectController {
 
     @PostMapping("/project")
     public ResponseEntity<String> createProject(@RequestBody CreateProjectDTO createProjectDTO) {
-        if(projectService.create(createProjectDTO)) {
-            return ResponseEntity.status(HttpStatus.OK).body(successMessage);
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("project name exists");
+        projectService.create(createProjectDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(successMessage);
     }
 
     @PostMapping("/project/{projectId}/repository/sonar")

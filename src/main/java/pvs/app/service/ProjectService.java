@@ -25,19 +25,14 @@ public class ProjectService {
         this.gitLabApiService = gitLabApiService;
     }
 
-    public boolean create(CreateProjectDTO createProjectDTO) {
+    public void create(CreateProjectDTO createProjectDTO) {
         // PVS has not had the register feature, so there is only one user that memberId is 1.
         final Long memberId = 1L;
         String projectName = createProjectDTO.getProjectName();
-        // Check if project name exist.
-        if(projectDAO.findByMemberIdAndNameAndRemoved(memberId, projectName, false) == null) {
-            Project project = new Project();
-            project.setMemberId(memberId);
-            project.setName(projectName);
-            projectDAO.save(project);
-            return true;
-        }
-        return false;
+        Project project = new Project();
+        project.setMemberId(memberId);
+        project.setName(projectName);
+        projectDAO.save(project);
     }
 
     public List<ResponseProjectDTO> getMemberProjects(Long memberId) {
