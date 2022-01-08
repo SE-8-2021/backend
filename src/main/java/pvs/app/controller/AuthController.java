@@ -23,6 +23,11 @@ public class AuthController {
         return authService.login(memberDTO.getUsername(), memberDTO.getPassword());
     }
 
+    @PostMapping(value = "/auth/register")
+    public Boolean register(@RequestBody MemberDTO memberDTO) {
+        return authService.register(memberDTO);
+    }
+
     @GetMapping(value = "/auth/memberId")
     public Long getMemberID(@RequestParam("username") String username) {
         return authService.getMemberId(username);

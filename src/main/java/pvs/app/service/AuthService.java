@@ -1,5 +1,6 @@
 package pvs.app.service;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -9,7 +10,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 import pvs.app.dao.MemberDAO;
+import pvs.app.dto.MemberDTO;
 import pvs.app.entity.Member;
 import pvs.app.utils.JwtTokenUtil;
 
@@ -45,6 +48,19 @@ public class AuthService {
             System.out.println("Authentication failed: " + e.getMessage());
             return null;
         }
+    }
+
+    public boolean register(MemberDTO memberDTO) {
+        if (memberDAO.findByUsername(memberDTO.getUsername()) != null) return false;
+
+        ModelMapper modelMapper = new ModelMapper();
+
+        // encode password with md5
+        String encodedPassword = DigestUtils.md5DigestAsHex(memberDTO.getPassword().getBytes());
+        memberDTO.setPassword(encodedPassword);
+        Member member = modelMapper.map(memberDTO, Member.class);
+        this.memberDAO.save(member);
+        return true;
     }
 
     public Long getMemberId(String username) {
