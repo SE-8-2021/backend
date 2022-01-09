@@ -1,5 +1,7 @@
 package pvs.app.config;
 
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -34,19 +36,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //校驗使用者
         try {
+            Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
             auth.userDetailsService(userDetailsService).passwordEncoder(new PasswordEncoder() {
                 //對密碼進行加密
                 @Override
                 public String encode(CharSequence charSequence) {
-                    return DigestUtils.md5DigestAsHex(charSequence.toString().getBytes());
+                    return argon2.hash(4, 1024 * 1024, 8, charSequence.toString().getBytes());
                 }
 
                 //對密碼進行判斷匹配
                 @Override
                 public boolean matches(CharSequence charSequence, String s) {
-                    String encode = DigestUtils.md5DigestAsHex(charSequence.toString().getBytes());
-
-                    return s.equals(encode);
+                    return argon2.verify(s, charSequence.toString().getBytes());
                 }
             });
         } catch (Exception e) {

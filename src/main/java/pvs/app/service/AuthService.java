@@ -1,5 +1,7 @@
 package pvs.app.service;
 
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -55,8 +57,9 @@ public class AuthService {
 
         ModelMapper modelMapper = new ModelMapper();
 
-        // encode password with md5
-        String encodedPassword = DigestUtils.md5DigestAsHex(memberDTO.getPassword().getBytes());
+        // Encode Password with Argon2 Algorithm
+        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+        String encodedPassword = argon2.hash(4, 1024 * 1024, 8, memberDTO.getPassword());
         memberDTO.setPassword(encodedPassword);
         Member member = modelMapper.map(memberDTO, Member.class);
         this.memberDAO.save(member);
