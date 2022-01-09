@@ -104,7 +104,7 @@ public class ProjectService {
         projectDAO.save(project);
         return true;
     }
-  
+
     public boolean addTrelloBoard(AddTrelloBoardDTO addTrelloBoardDTO) {
         Optional<Project> projectOptional = projectDAO.findById(addTrelloBoardDTO.getProjectId());
         if (projectOptional.isEmpty()) return false;
