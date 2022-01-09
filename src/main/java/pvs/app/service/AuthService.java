@@ -57,10 +57,10 @@ public class AuthService {
 
         ModelMapper modelMapper = new ModelMapper();
 
-        // Encode Password with Argon2 Algorithm
+        // Hash Password with Argon2 Algorithm
         Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
-        String encodedPassword = argon2.hash(4, 1024 * 1024, 8, memberDTO.getPassword());
-        memberDTO.setPassword(encodedPassword);
+        String hashedPassword = argon2.hash(4, 1024 * 1024, 8, memberDTO.getPassword());
+        memberDTO.setPassword(hashedPassword);
         Member member = modelMapper.map(memberDTO, Member.class);
         this.memberDAO.save(member);
         return true;
