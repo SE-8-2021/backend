@@ -25,7 +25,7 @@ public class AuthController {
 
     @PostMapping(value = "/auth/register")
     public Boolean register(@RequestBody MemberDTO memberDTO) {
-        if (!authService.passwordValidates(memberDTO.getPassword())) return false;
+        if (!authService.isValidPassword(memberDTO.getPassword())) return false;
         return authService.register(memberDTO);
     }
 

@@ -74,7 +74,7 @@ public class AuthService {
      *  4. At least one special character
      *  5. More than 8 digits
      */
-    public boolean passwordValidates( String password ) {
+    public boolean isValidPassword(String password) {
         String passwordRegex = "^(?=.*?[0-9])(?=.*?[A-Za-z])(?=(?=.*?[`!@#$%^&*()_+-])|(?=.*?[=\\[\\]{};'\":|,.<>/?~])).{8,}$";
         return password.matches(passwordRegex);
     }
