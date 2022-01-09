@@ -1,6 +1,5 @@
 package pvs.app.controller;
 
-import org.gitlab4j.api.GitLabApiException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,7 +9,6 @@ import pvs.app.dto.*;
 import pvs.app.service.ProjectService;
 import pvs.app.service.RepositoryService;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
