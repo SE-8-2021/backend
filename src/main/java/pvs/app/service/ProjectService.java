@@ -26,12 +26,9 @@ public class ProjectService {
     }
 
     public void create(CreateProjectDTO createProjectDTO) {
-        // PVS has not had the register feature, so there is only one user that memberId is 1.
-        final Long memberId = 1L;
-        String projectName = createProjectDTO.getProjectName();
         Project project = new Project();
-        project.setMemberId(memberId);
-        project.setName(projectName);
+        project.setMemberId(createProjectDTO.getMemberId());
+        project.setName(createProjectDTO.getProjectName());
         projectDAO.save(project);
     }
 
