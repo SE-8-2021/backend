@@ -37,17 +37,17 @@ public class ProjectService {
         List<ResponseProjectDTO> projectDTOList = new ArrayList<>();
 
         for (Project project : projectList) {
-            ResponseProjectDTO projectDTO = new ResponseProjectDTO();
-            projectDTO.setProjectId(project.getProjectId());
-            projectDTO.setProjectName(project.getName());
-            projectDTO.setAvatarURL(project.getAvatarURL());
+            ResponseProjectDTO responseProjectDTO = new ResponseProjectDTO();
+            responseProjectDTO.setProjectId(project.getProjectId());
+            responseProjectDTO.setProjectName(project.getName());
+            responseProjectDTO.setAvatarURL(project.getAvatarURL());
             for (Repository repository : project.getRepositorySet()) {
                 RepositoryDTO repositoryDTO = new RepositoryDTO();
                 repositoryDTO.setUrl(repository.getUrl());
                 repositoryDTO.setType(repository.getType());
-                projectDTO.getRepositoryDTOList().add(repositoryDTO);
+                responseProjectDTO.getRepositoryDTOList().add(repositoryDTO);
             }
-            projectDTOList.add(projectDTO);
+            projectDTOList.add(responseProjectDTO);
         }
         return projectDTOList;
     }
@@ -139,17 +139,17 @@ public class ProjectService {
 
         for (Project project : projectList) {
             if (!project.isRemoved()) {
-                ResponseProjectDTO projectDTO = new ResponseProjectDTO();
-                projectDTO.setProjectId(project.getProjectId());
-                projectDTO.setProjectName(project.getName());
-                projectDTO.setAvatarURL(project.getAvatarURL());
+                ResponseProjectDTO responseProjectDTO = new ResponseProjectDTO();
+                responseProjectDTO.setProjectId(project.getProjectId());
+                responseProjectDTO.setProjectName(project.getName());
+                responseProjectDTO.setAvatarURL(project.getAvatarURL());
                 for (Repository repository : project.getRepositorySet()) {
                     RepositoryDTO repositoryDTO = new RepositoryDTO();
                     repositoryDTO.setUrl(repository.getUrl());
                     repositoryDTO.setType(repository.getType());
-                    projectDTO.getRepositoryDTOList().add(repositoryDTO);
+                    responseProjectDTO.getRepositoryDTOList().add(repositoryDTO);
                 }
-                projectDTOList.add(projectDTO);
+                projectDTOList.add(responseProjectDTO);
             }
         }
         return projectDTOList;
