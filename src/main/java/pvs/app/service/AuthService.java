@@ -63,6 +63,19 @@ public class AuthService {
         return true;
     }
 
+    /**
+     * Ensure that we have met the following password criteria:
+     *  1. At least one number
+     *  2. At least one lowercase
+     *  3. At least one uppercase
+     *  4. At least one special character
+     *  5. More than 8 digits
+     */
+    public boolean passwordValidates( String password ) {
+        String passwordRegex = "^(?=.*?[0-9])(?=.*?[A-Za-z])(?=(?=.*?[`!@#$%^&*()_+-])|(?=.*?[=\\[\\]{};'\":|,.<>/?~])).{8,}$";
+        return password.matches(passwordRegex);
+    }
+
     public Long getMemberId(String username) {
         Member member = this.memberDAO.findByUsername(username);
         return member == null ? null : member.getMemberId();
