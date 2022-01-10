@@ -147,6 +147,13 @@
             <classifier>standalone</classifier>
         </dependency>
 
+        <!-- Argon2 for Password Hashing -->
+        <dependency>
+            <groupId>de.mkammerer</groupId>
+            <artifactId>argon2-jvm</artifactId>
+            <version>2.11</version>
+        </dependency>
+
     </dependencies>
 
     <build>

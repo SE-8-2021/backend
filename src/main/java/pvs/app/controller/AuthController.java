@@ -23,6 +23,12 @@ public class AuthController {
         return authService.login(memberDTO.getUsername(), memberDTO.getPassword());
     }
 
+    @PostMapping(value = "/auth/register")
+    public boolean register(@RequestBody MemberDTO memberDTO) {
+        if (!authService.isValidPassword(memberDTO.getPassword())) return false;
+        return authService.register(memberDTO);
+    }
+
     @GetMapping(value = "/auth/memberId")
     public Long getMemberID(@RequestParam("username") String username) {
         return authService.getMemberId(username);
