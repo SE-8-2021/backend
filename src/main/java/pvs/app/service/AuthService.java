@@ -39,6 +39,10 @@ public class AuthService {
         this.memberDAO = memberDAO;
     }
 
+    public boolean isValidToken(String token) {
+        return jwtTokenUtil.isValidToken(token);
+    }
+
     public String login(String username, String password) {
         try {
             UsernamePasswordAuthenticationToken upToken = new UsernamePasswordAuthenticationToken(username, password);
@@ -46,7 +50,7 @@ public class AuthService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             return jwtTokenUtil.generateToken(userDetails);
-        } catch (AuthenticationException  e) {
+        } catch (AuthenticationException e) {
             System.out.println("Authentication failed: " + e.getMessage());
             return null;
         }

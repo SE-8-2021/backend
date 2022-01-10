@@ -1,24 +1,29 @@
 package pvs.app.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import kong.unirest.HttpStatus;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import pvs.app.dto.MemberDTO;
 import pvs.app.service.AuthService;
 
 @RestController
 public class AuthController {
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
-    /**
-     * 登录
-     */
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    @PostMapping(value = "/auth/verifyJwt")
+    public void isValidToken(@RequestHeader("Authorization") String token) {
+        final boolean isValidToken = authService.isValidToken(token);
+        if (isValidToken) ResponseEntity.ok().build();
+        else ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
     @PostMapping(value = "/auth/login")
-    public String login(@RequestBody MemberDTO memberDTO) {
+    public String login(@NotNull @RequestBody MemberDTO memberDTO) {
         // return jwt if login success
         return authService.login(memberDTO.getUsername(), memberDTO.getPassword());
     }
