@@ -40,7 +40,7 @@ public class GithubApiService {
     }
 
     private void setGraphQlGetCommitsTotalCountAndCursorQuery(String owner, String name, Date lastUpdate) {
-        final int requestNum = 100;
+        final int requestNum = 30;
         String since = dateToISO8601(lastUpdate);
         Map<String, Object> graphQl = new HashMap<>();
         graphQl.put("query", "{repository(owner: \"" + owner + "\", name:\"" + name + "\") {" +
@@ -68,7 +68,7 @@ public class GithubApiService {
     }
 
     private void setGraphQlGetIssuesTotalCountQuery(String owner, String name) {
-        final int requestNum = 100;
+        final int requestNum = 30;
         Map<String, Object> graphQl = new HashMap<>();
         graphQl.put("query", "{repository(owner: \"" + owner + "\", name:\"" + name + "\") {" +
                 "issues (first: " + requestNum + ") {" +
@@ -79,7 +79,7 @@ public class GithubApiService {
     }
 
     private void setGraphQlGetPullRequestQuery(String owner, String name) {
-        final int requestNum = 100;
+        final int requestNum = 30;
         Map<String, Object> graphQl = new HashMap<>();
         graphQl.put("query", "{repository(owner: \"" + owner + "\", name:\"" + name + "\") {" +
                 "pullRequests (first: " + requestNum + ") {" +

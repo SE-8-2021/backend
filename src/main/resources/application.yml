@@ -17,6 +17,8 @@ webClient:
     test: ""
 
 spring:
+  codec:
+    max-in-memory-size: 524288000
   profiles:
     active: test
   datasource:

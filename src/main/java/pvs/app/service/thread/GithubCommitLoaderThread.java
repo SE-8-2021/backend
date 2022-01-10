@@ -39,7 +39,7 @@ public class GithubCommitLoaderThread extends Thread {
                 "ref(qualifiedName: \"" + this.branchName + "\") {" +
                 "target {" +
                 "... on Commit {" +
-                "history (last:100, before: \"" + this.cursor + "\") {" +
+                "history (last:30, before: \"" + this.cursor + "\") {" +
                 "nodes {" +
                 "committedDate\n" +
                 "additions\n" +
