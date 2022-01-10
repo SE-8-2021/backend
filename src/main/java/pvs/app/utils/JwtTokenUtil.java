@@ -53,8 +53,7 @@ public class JwtTokenUtil implements Serializable {
                 .getBody();
     }
 
-    @NotNull
-    private Boolean isTokenExpired(String token) {
+    private boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
@@ -75,7 +74,7 @@ public class JwtTokenUtil implements Serializable {
                 .compact();
     }
 
-    public Boolean isValidToken(String token) {
+    public boolean isValidToken(String token) {
         if (!isJWT(token)) return false;
         final String username = getUsernameFromToken(token);
         try {
