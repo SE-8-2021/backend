@@ -2,7 +2,6 @@ package pvs.app.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.gitlab4j.api.GitLabApiException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +21,7 @@ import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -45,8 +44,6 @@ public class ProjectServiceTest {
     public void setup() throws IOException {
         projectDTO = new CreateProjectDTO();
         projectDTO.setProjectName("react");
-        projectDTO.setGithubRepositoryURL("https://github.com/facebook/react");
-        projectDTO.setSonarRepositoryURL("http://localhost:9000/dashboard?id=pvs-springboot");
 
         project = new Project();
         project.setProjectId(1L);
@@ -64,24 +61,6 @@ public class ProjectServiceTest {
 
         ObjectMapper mapper = new ObjectMapper();
         mockAvatar = Optional.ofNullable(mapper.readTree(responseJson));
-    }
-
-    @Test
-    public void create() throws IOException, GitLabApiException {
-        //context
-        when(githubApiService.getAvatarURL("facebook"))
-                .thenReturn(mockAvatar.orElse(null));
-
-        when(projectDAO.save(any(Project.class)))
-                .thenReturn(project);
-        when(projectDAO.findById(1L))
-                .thenReturn(Optional.of(project));
-
-        //when
-        projectService.create(projectDTO);
-
-        //then
-        verify(githubApiService, times(1)).getAvatarURL("facebook");
     }
 
     @Test

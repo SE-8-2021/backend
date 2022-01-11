@@ -1,6 +1,5 @@
 package pvs.app.controller;
 
-import org.gitlab4j.api.GitLabApiException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,7 +9,6 @@ import pvs.app.dto.*;
 import pvs.app.service.ProjectService;
 import pvs.app.service.RepositoryService;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,14 +64,9 @@ public class ProjectController {
     }
 
     @PostMapping("/project")
-    public ResponseEntity<String> createProject(@RequestBody CreateProjectDTO projectDTO) {
-        try {
-            projectService.create(projectDTO);
-            return ResponseEntity.status(HttpStatus.OK).body(successMessage);
-        } catch (IOException | GitLabApiException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
-        }
+    public ResponseEntity<String> createProject(@RequestBody CreateProjectDTO createProjectDTO) {
+        projectService.create(createProjectDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(successMessage);
     }
 
     @PostMapping("/project/{projectId}/repository/sonar")

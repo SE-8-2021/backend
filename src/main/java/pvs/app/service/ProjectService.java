@@ -27,40 +27,11 @@ public class ProjectService {
         this.gitLabApiService = gitLabApiService;
     }
 
-    public void create(CreateProjectDTO projectDTO) throws IOException, GitLabApiException {
-        Project savedProject;
+    public void create(CreateProjectDTO createProjectDTO) {
         Project project = new Project();
-        project.setMemberId(projectDTO.getMemberId());
-        project.setName(projectDTO.getProjectName());
-        savedProject = projectDAO.save(project);
-
-        if (!projectDTO.getGithubRepositoryURL().trim().equals("")) {
-            AddGithubRepositoryDTO addGithubRepositoryDTO = new AddGithubRepositoryDTO();
-            addGithubRepositoryDTO.setProjectId(savedProject.getProjectId());
-            addGithubRepositoryDTO.setRepositoryURL(projectDTO.getGithubRepositoryURL());
-            addGithubRepo(addGithubRepositoryDTO);
-        }
-
-        if (!projectDTO.getGitLabRepositoryURL().trim().equals("")) {
-            AddGitLabRepositoryDTO addGitlabRepositoryDTO = new AddGitLabRepositoryDTO();
-            addGitlabRepositoryDTO.setProjectId(savedProject.getProjectId());
-            addGitlabRepositoryDTO.setRepositoryURL(projectDTO.getGitLabRepositoryURL());
-            addGitLabRepo(addGitlabRepositoryDTO);
-        }
-
-        if (!projectDTO.getSonarRepositoryURL().trim().equals("")) {
-            AddSonarRepositoryDTO addSonarRepositoryDTO = new AddSonarRepositoryDTO();
-            addSonarRepositoryDTO.setProjectId(savedProject.getProjectId());
-            addSonarRepositoryDTO.setRepositoryURL(projectDTO.getSonarRepositoryURL());
-            addSonarRepo(addSonarRepositoryDTO);
-        }
-
-        if (!projectDTO.getTrelloBoardURL().trim().equals("")) {
-            AddTrelloBoardDTO addTrelloBoardDTO = new AddTrelloBoardDTO();
-            addTrelloBoardDTO.setProjectId(savedProject.getProjectId());
-            addTrelloBoardDTO.setRepositoryURL(projectDTO.getSonarRepositoryURL());
-            addTrelloBoard(addTrelloBoardDTO);
-        }
+        project.setMemberId(createProjectDTO.getMemberId());
+        project.setName(createProjectDTO.getProjectName());
+        projectDAO.save(project);
     }
 
     public List<ResponseProjectDTO> getMemberProjects(Long memberId) {
@@ -68,17 +39,17 @@ public class ProjectService {
         List<ResponseProjectDTO> projectDTOList = new ArrayList<>();
 
         for (Project project : projectList) {
-            ResponseProjectDTO projectDTO = new ResponseProjectDTO();
-            projectDTO.setProjectId(project.getProjectId());
-            projectDTO.setProjectName(project.getName());
-            projectDTO.setAvatarURL(project.getAvatarURL());
+            ResponseProjectDTO responseProjectDTO = new ResponseProjectDTO();
+            responseProjectDTO.setProjectId(project.getProjectId());
+            responseProjectDTO.setProjectName(project.getName());
+            responseProjectDTO.setAvatarURL(project.getAvatarURL());
             for (Repository repository : project.getRepositorySet()) {
                 RepositoryDTO repositoryDTO = new RepositoryDTO();
                 repositoryDTO.setUrl(repository.getUrl());
                 repositoryDTO.setType(repository.getType());
-                projectDTO.getRepositoryDTOList().add(repositoryDTO);
+                responseProjectDTO.getRepositoryDTOList().add(repositoryDTO);
             }
-            projectDTOList.add(projectDTO);
+            projectDTOList.add(responseProjectDTO);
         }
         return projectDTOList;
     }
@@ -138,7 +109,7 @@ public class ProjectService {
         projectDAO.save(project);
         return true;
     }
-  
+
     public boolean addTrelloBoard(AddTrelloBoardDTO addTrelloBoardDTO) {
         Optional<Project> projectOptional = projectDAO.findById(addTrelloBoardDTO.getProjectId());
         if (projectOptional.isEmpty()) return false;
@@ -173,17 +144,17 @@ public class ProjectService {
 
         for (Project project : projectList) {
             if (!project.isRemoved()) {
-                ResponseProjectDTO projectDTO = new ResponseProjectDTO();
-                projectDTO.setProjectId(project.getProjectId());
-                projectDTO.setProjectName(project.getName());
-                projectDTO.setAvatarURL(project.getAvatarURL());
+                ResponseProjectDTO responseProjectDTO = new ResponseProjectDTO();
+                responseProjectDTO.setProjectId(project.getProjectId());
+                responseProjectDTO.setProjectName(project.getName());
+                responseProjectDTO.setAvatarURL(project.getAvatarURL());
                 for (Repository repository : project.getRepositorySet()) {
                     RepositoryDTO repositoryDTO = new RepositoryDTO();
                     repositoryDTO.setUrl(repository.getUrl());
                     repositoryDTO.setType(repository.getType());
-                    projectDTO.getRepositoryDTOList().add(repositoryDTO);
+                    responseProjectDTO.getRepositoryDTOList().add(repositoryDTO);
                 }
-                projectDTOList.add(projectDTO);
+                projectDTOList.add(responseProjectDTO);
             }
         }
         return projectDTOList;
