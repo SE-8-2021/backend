@@ -25,7 +25,6 @@ public class JwtTokenUtilTest {
     private JwtTokenUtil jwtTokenUtil;
 
     private Member memberUser;
-    private Member memberAdmin;
 
     @Before
     public void setup() throws IOException {
@@ -39,7 +38,7 @@ public class JwtTokenUtilTest {
         memberUser.setPassword(DigestUtils.md5DigestAsHex("user".getBytes()));
         memberUser.setAuthorities(Set.of(userRole));
 
-        memberAdmin = new Member();
+        Member memberAdmin = new Member();
         Role adminRole = new Role();
         adminRole.setRoleId(2L);
         adminRole.setName("ADMIN");
@@ -56,7 +55,7 @@ public class JwtTokenUtilTest {
         UserDetails userDetails = memberUser;
         //when
         String token = jwtTokenUtil.generateToken(userDetails);
-        boolean tokenValidated = jwtTokenUtil.validateToken(token, userDetails);
+        boolean tokenValidated = jwtTokenUtil.isValidToken(token);
         //then
         Assert.assertTrue(tokenValidated);
     }
@@ -65,11 +64,10 @@ public class JwtTokenUtilTest {
     public void invalidToken() {
         //given
         UserDetails authenticatedUser = memberUser;
-        UserDetails authenticatedAdmin = memberAdmin;
 
         //when
         String token = jwtTokenUtil.generateToken(authenticatedUser);
-        boolean tokenValidated = jwtTokenUtil.validateToken(token, authenticatedAdmin);
+        boolean tokenValidated = jwtTokenUtil.isValidToken(token);
 
         //then
         Assert.assertFalse(tokenValidated);

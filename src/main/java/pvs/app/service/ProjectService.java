@@ -2,6 +2,7 @@ package pvs.app.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.gitlab4j.api.GitLabApiException;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import pvs.app.dao.ProjectDAO;
 import pvs.app.dto.*;
@@ -11,6 +12,7 @@ import pvs.app.entity.Repository;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -85,7 +87,7 @@ public class ProjectService {
         return true;
     }
 
-    public boolean addGitLabRepo(AddGitLabRepositoryDTO addGitLabRepositoryDTO) throws GitLabApiException {
+    public boolean addGitLabRepo(@NotNull AddGitLabRepositoryDTO addGitLabRepositoryDTO) {
         Optional<Project> projectOptional = projectDAO.findById(addGitLabRepositoryDTO.getProjectId());
         if (projectOptional.isEmpty()) return false;
 
@@ -97,10 +99,13 @@ public class ProjectService {
         project.getRepositorySet().add(repository);
         String owner = url.split("/")[3];
         String projectName = url.split("/")[4];
-        String responseURL = gitLabApiService.getAvatarURL(owner, projectName);
-        if (responseURL != null) {
-            project.setAvatarURL(responseURL);
+        String responseURL = null;
+        try {
+            responseURL = gitLabApiService.getAvatarURL(owner, projectName);
+        } catch (GitLabApiException | NullPointerException e) {
+            e.printStackTrace();
         }
+        project.setAvatarURL(Objects.requireNonNullElse(responseURL, "https://i.imgur.com/HTdJRkN.webp"));
         projectDAO.save(project);
         return true;
     }

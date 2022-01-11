@@ -34,7 +34,7 @@ public class GithubIssueLoaderThread extends Thread {
     @Override
     public void run() {
         String responseJson = Objects.requireNonNull(this.webClient.get()
-                        .uri("/" + this.repoOwner + "/" + this.repoName + "/issues?page=" + this.page + "&per_page=100&state=all")
+                        .uri("/" + this.repoOwner + "/" + this.repoName + "/issues?page=" + this.page + "&per_page=10&state=all")
                         .exchange()
                         .block())
                 .bodyToMono(String.class)

@@ -111,6 +111,8 @@ public class ProjectController {
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(urlInvalidMessage);
         } catch (Exception e) {
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@");
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
         }
     }
