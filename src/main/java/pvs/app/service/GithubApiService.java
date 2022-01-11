@@ -236,7 +236,7 @@ public class GithubApiService {
             List<GithubIssueLoaderThread> githubIssueLoaderThreadList = new ArrayList<>();
 
             if (totalCount > 0) {
-                for (int i = 1; i <= Math.ceil(totalCount / 100); i++) {
+                for (int i = 1; i <= Math.ceil(totalCount / 5) + 1; i++) {
                     GithubIssueLoaderThread githubIssueLoaderThread =
                             new GithubIssueLoaderThread(
                                     githubIssueDTOList,
