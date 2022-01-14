@@ -24,6 +24,10 @@ public class Member implements UserDetails {
     @NotNull
     private String password;
 
+    /**
+     * Authority function implements from UserDetails interface
+     * Default return null
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
