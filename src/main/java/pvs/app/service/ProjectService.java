@@ -54,7 +54,7 @@ public class ProjectService {
         return projectDTOList;
     }
 
-    public boolean addSonarRepo(AddSonarRepositoryDTO addSonarRepositoryDTO) {
+    public boolean addSonarRepo(AddRepositoryDTO addSonarRepositoryDTO) {
         Optional<Project> projectOptional = projectDAO.findById(addSonarRepositoryDTO.getProjectId());
         if (projectOptional.isEmpty()) return false;
 
@@ -67,12 +67,12 @@ public class ProjectService {
         return true;
     }
 
-    public boolean addGithubRepo(AddGithubRepositoryDTO addGithubRepositoryDTO) throws IOException {
-        Optional<Project> projectOptional = projectDAO.findById(addGithubRepositoryDTO.getProjectId());
+    public boolean addGithubRepo(AddRepositoryDTO addRepositoryDTO) throws IOException {
+        Optional<Project> projectOptional = projectDAO.findById(addRepositoryDTO.getProjectId());
         if (projectOptional.isEmpty()) return false;
 
         Project project = projectOptional.get();
-        String url = addGithubRepositoryDTO.getRepositoryURL();
+        String url = addRepositoryDTO.getRepositoryURL();
         Repository repository = new Repository();
         repository.setUrl(url);
         repository.setType("github");
@@ -87,7 +87,7 @@ public class ProjectService {
         return true;
     }
 
-    public boolean addGitLabRepo(@NotNull AddGitLabRepositoryDTO addGitLabRepositoryDTO) {
+    public boolean addGitLabRepo(@NotNull AddRepositoryDTO addGitLabRepositoryDTO) {
         Optional<Project> projectOptional = projectDAO.findById(addGitLabRepositoryDTO.getProjectId());
         if (projectOptional.isEmpty()) return false;
 
@@ -110,7 +110,7 @@ public class ProjectService {
         return true;
     }
 
-    public boolean addTrelloBoard(AddTrelloBoardDTO addTrelloBoardDTO) {
+    public boolean addTrelloBoard(AddRepositoryDTO addTrelloBoardDTO) {
         Optional<Project> projectOptional = projectDAO.findById(addTrelloBoardDTO.getProjectId());
         if (projectOptional.isEmpty()) return false;
 

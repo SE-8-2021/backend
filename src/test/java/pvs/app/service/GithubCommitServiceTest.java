@@ -9,7 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import pvs.app.Application;
 import pvs.app.dao.GithubCommitDAO;
-import pvs.app.dto.GithubCommitDTO;
+import pvs.app.dto.CommitDTO;
 import pvs.app.entity.GithubCommit;
 
 import java.text.ParseException;
@@ -28,7 +28,7 @@ public class GithubCommitServiceTest {
 
     private final GithubCommit githubCommit01 = new GithubCommit();
     private final GithubCommit githubCommit02 = new GithubCommit();
-    private final GithubCommitDTO githubCommitDTO01 = new GithubCommitDTO();
+    private final CommitDTO githubCommitDTO01 = new CommitDTO();
     @Autowired
     private GithubCommitService githubCommitService;
     @MockBean
@@ -66,7 +66,7 @@ public class GithubCommitServiceTest {
                 .thenReturn(githubCommits);
 
         //when
-        List<GithubCommitDTO> githubCommits = githubCommitService.getAllCommits("facebook", "react");
+        List<CommitDTO> githubCommits = githubCommitService.getAllCommits("facebook", "react");
 
         //then
         assertEquals(2, githubCommits.size());
@@ -83,7 +83,7 @@ public class GithubCommitServiceTest {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // 日期格式
 
         //when
-        GithubCommitDTO githubCommit = githubCommitService.getLastCommit("facebook", "react");
+        CommitDTO githubCommit = githubCommitService.getLastCommit("facebook", "react");
 
         //then
         assertEquals(dateFormat.parse("2020-12-21 22:22:22"), githubCommit.getCommittedDate());
@@ -97,7 +97,7 @@ public class GithubCommitServiceTest {
                 .thenReturn(null);
 
         //when
-        GithubCommitDTO githubCommit = githubCommitService.getLastCommit("facebook", "react");
+        CommitDTO githubCommit = githubCommitService.getLastCommit("facebook", "react");
 
         //then
         assertNull(githubCommit);
@@ -118,7 +118,7 @@ public class GithubCommitServiceTest {
         githubCommitService.save(githubCommitDTO01);
 
         //then
-        List<GithubCommitDTO> githubCommitDTOList = githubCommitService.getAllCommits("facebook", "react");
+        List<CommitDTO> githubCommitDTOList = githubCommitService.getAllCommits("facebook", "react");
         assertEquals(1, githubCommitDTOList.size());
 //        verify(mockGithubCommitDAO, times(1)).save(githubCommit01);
     }
