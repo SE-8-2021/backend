@@ -29,9 +29,9 @@ public class AuthController {
     }
 
     @PostMapping(value = "/auth/register")
-    public boolean register(@RequestBody MemberDTO memberDTO) {
-        if (!authService.isValidPassword(memberDTO.getPassword())) return false;
-        return authService.register(memberDTO);
+    public String register(@RequestBody MemberDTO memberDTO) {
+        if (!authService.isValidPassword(memberDTO.getPassword())) return "InvalidPassword";
+        return authService.register(memberDTO) ? "RegisterSuccess" : "RegisterFailed";
     }
 
     @GetMapping(value = "/auth/memberId")
