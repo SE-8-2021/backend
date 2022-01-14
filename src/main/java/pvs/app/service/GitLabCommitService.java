@@ -3,7 +3,7 @@ package pvs.app.service;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import pvs.app.dao.GitLabCommitDAO;
-import pvs.app.dto.GitLabCommitDTO;
+import pvs.app.dto.CommitDTO;
 import pvs.app.entity.GitlabCommit;
 
 import java.text.SimpleDateFormat;
@@ -20,13 +20,13 @@ public class GitLabCommitService {
         this.modelMapper = modelMapper;
     }
 
-    public void save(GitLabCommitDTO gitlabCommitDTO) {
+    public void save(CommitDTO gitlabCommitDTO) {
         GitlabCommit gitlabCommit = modelMapper.map(gitlabCommitDTO, GitlabCommit.class);
         gitLabCommitDAO.save(gitlabCommit);
     }
 
-    public boolean checkIfExist(GitLabCommitDTO gitLabCommitDTO) {
-        GitlabCommit gitlabCommit = modelMapper.map(gitLabCommitDTO, GitlabCommit.class);
+    public boolean checkIfExist(CommitDTO commitDTO) {
+        GitlabCommit gitlabCommit = modelMapper.map(commitDTO, GitlabCommit.class);
         List<GitlabCommit> entities = gitLabCommitDAO.findByRepoOwnerAndRepoName(gitlabCommit.getRepoOwner(), gitlabCommit.getRepoName());
         SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
         for (GitlabCommit gitlabCommits : entities) {
@@ -37,37 +37,37 @@ public class GitLabCommitService {
         return false;
     }
 
-    public List<GitLabCommitDTO> getAllCommits(String repoOwner, String repoName) {
+    public List<CommitDTO> getAllCommits(String repoOwner, String repoName) {
         List<GitlabCommit> entities = gitLabCommitDAO.findByRepoOwnerAndRepoName(repoOwner, repoName);
-        List<GitLabCommitDTO> gitLabCommitDTOS = new LinkedList<>();
+        List<CommitDTO> commitDTOS = new LinkedList<>();
 
         for (GitlabCommit gitlabCommit : entities) {
-            GitLabCommitDTO dto = modelMapper.map(gitlabCommit, GitLabCommitDTO.class);
+            CommitDTO dto = modelMapper.map(gitlabCommit, CommitDTO.class);
             dto.setCommittedDate(gitlabCommit.getCommittedDate());
-            gitLabCommitDTOS.add(dto);
+            commitDTOS.add(dto);
         }
-        return gitLabCommitDTOS;
+        return commitDTOS;
     }
 
     //use for testing
-    public GitLabCommitDTO getLastCommit(String repoOwner, String repoName) {
+    public CommitDTO getLastCommit(String repoOwner, String repoName) {
         GitlabCommit gitlabCommit = gitLabCommitDAO.findFirstByRepoOwnerAndRepoNameOrderByCommittedDateDesc(repoOwner, repoName);
         if (gitlabCommit == null) return null;
 
-        GitLabCommitDTO dto = modelMapper.map(gitlabCommit, GitLabCommitDTO.class);
+        CommitDTO dto = modelMapper.map(gitlabCommit, CommitDTO.class);
         dto.setCommittedDate(gitlabCommit.getCommittedDate());
         return dto;
     }
 
-    public List<GitLabCommitDTO> getCommitsOfSpecificBranch(String repoOwner, String repoName, String branchName) {
+    public List<CommitDTO> getCommitsOfSpecificBranch(String repoOwner, String repoName, String branchName) {
         List<GitlabCommit> entities = gitLabCommitDAO.findByRepoOwnerAndRepoNameAndBranchName(repoOwner, repoName, branchName);
-        List<GitLabCommitDTO> gitLabCommitDTOs = new LinkedList<>();
+        List<CommitDTO> commitDTOS = new LinkedList<>();
 
         for (GitlabCommit gitlabCommit : entities) {
-            GitLabCommitDTO dto = modelMapper.map(gitlabCommit, GitLabCommitDTO.class);
+            CommitDTO dto = modelMapper.map(gitlabCommit, CommitDTO.class);
             dto.setCommittedDate(gitlabCommit.getCommittedDate());
-            gitLabCommitDTOs.add(dto);
+            commitDTOS.add(dto);
         }
-        return gitLabCommitDTOs;
+        return commitDTOS;
     }
 }
