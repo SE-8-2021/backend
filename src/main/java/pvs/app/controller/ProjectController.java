@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pvs.app.dto.AddRepositoryDTO;
 import pvs.app.dto.CreateProjectDTO;
 import pvs.app.dto.ResponseProjectDTO;
 import pvs.app.service.ProjectService;
@@ -16,6 +17,8 @@ import java.util.Optional;
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProjectController {
     private final ProjectService projectService;
+    @Value("${message.exception}")
+    private String exceptionMessage;
     @Value("${message.success}")
     private String successMessage;
     @Value("${message.fail}")
@@ -29,6 +32,56 @@ public class ProjectController {
     public ResponseEntity<String> createProject(@RequestBody CreateProjectDTO createProjectDTO) {
         projectService.create(createProjectDTO);
         return ResponseEntity.status(HttpStatus.OK).body(successMessage);
+    }
+
+    @PostMapping("/project/{projectId}/repository/github")
+    public ResponseEntity<String> addGitHubRepository(@RequestBody AddRepositoryDTO addRepositoryDTO) {
+        try {
+            if (projectService.addGithubRepo(addRepositoryDTO)) {
+                return ResponseEntity.status(HttpStatus.OK).body(successMessage);
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
+        }
+    }
+
+    @PostMapping("/project/{projectId}/repository/gitlab")
+    public ResponseEntity<String> addGitLabRepository(@RequestBody AddRepositoryDTO addGitLabRepositoryDTO) {
+        try {
+            if (projectService.addGitLabRepo(addGitLabRepositoryDTO)) {
+                return ResponseEntity.status(HttpStatus.OK).body(successMessage);
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
+        }
+    }
+
+    @PostMapping("/project/{projectId}/repository/sonar")
+    public ResponseEntity<String> addSonarRepository(@RequestBody AddRepositoryDTO addSonarRepositoryDTO) {
+        try {
+            if (projectService.addSonarRepo(addSonarRepositoryDTO)) {
+                return ResponseEntity.status(HttpStatus.OK).body(successMessage);
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
+        }
+    }
+
+    @PostMapping("/project/{projectId}/repository/trello")
+    public ResponseEntity<String> addTrelloBoard(@RequestBody AddRepositoryDTO addTrelloBoardDTO) {
+        try {
+            if (projectService.addTrelloBoard(addTrelloBoardDTO)) {
+                return ResponseEntity.status(HttpStatus.OK).body(successMessage);
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
+        }
     }
 
     @GetMapping("/project/{memberId}")
