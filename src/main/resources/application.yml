@@ -39,6 +39,3 @@ spring:
       ddl-auto: update
   jackson:
     time-zone: Asia/Taipei
-  sql:
-    init:
-      mode: always
