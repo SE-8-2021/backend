@@ -69,8 +69,8 @@ public class ProjectController {
         return ResponseEntity.status(HttpStatus.OK).body(successMessage);
     }
 
-    @PatchMapping("/project")
-    public ResponseEntity<String> renameProject(@RequestParam("name") String name, @RequestParam("projectId") Long projectId) {
+    @PatchMapping("/project/name")
+    public ResponseEntity<String> renameProject(@RequestParam(required = false) String name, @RequestParam(required = false) Long projectId) {
         projectService.rename(name, projectId);
         return ResponseEntity.status(HttpStatus.OK).body(successMessage);
     }
