@@ -39,11 +39,17 @@ public class ProjectController {
         return ResponseEntity.status(HttpStatus.OK).body(successMessage);
     }
 
+    @PatchMapping("/project/name")
+    public ResponseEntity<String> renameProject(@RequestParam(required = false) String name, @RequestParam(required = false) Long projectId) {
+        projectService.rename(name, projectId);
+        return ResponseEntity.status(HttpStatus.OK).body(successMessage);
+    }
+
     @PostMapping("/project/{projectId}/repository/github")
-    public ResponseEntity<String> addGitHubRepository(@RequestBody AddRepositoryDTO addRepositoryDTO) {
+    public ResponseEntity<String> addGitHubRepository(@RequestBody AddRepositoryDTO addGitHubRepositoryDTO) {
         try {
-            if (repositoryService.checkGithubURL(addRepositoryDTO.getRepositoryURL())) {
-                if (projectService.addGithubRepo(addRepositoryDTO)) {
+            if (repositoryService.checkGithubURL(addGitHubRepositoryDTO.getRepositoryURL())) {
+                if (projectService.addGithubRepo(addGitHubRepositoryDTO)) {
                     return ResponseEntity.status(HttpStatus.OK).body(successMessage);
                 }
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);

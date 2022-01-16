@@ -34,6 +34,10 @@ public class ProjectService {
         projectDAO.save(project);
     }
 
+    public void rename(String name, Long projectId) {
+        projectDAO.renameProjectById(name, projectId);
+    }
+
     public List<ResponseProjectDTO> getMemberProjects(Long memberId) {
         List<Project> projectList = projectDAO.findByMemberId(memberId);
         List<ResponseProjectDTO> projectDTOList = new ArrayList<>();

@@ -24,7 +24,7 @@ public class Project {
     private String name;
 
     @NotNull
-    private String avatarURL = "https://avatars3.githubusercontent.com/u/17744001?u=038d9e068c4205d94c670d7d89fb921ec5b29782&v=4";
+    private String avatarURL = "";
 
     // default value is false
     // getter of "boolean" type is "isRemoved()"
