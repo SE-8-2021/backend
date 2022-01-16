@@ -76,7 +76,7 @@ public class ProjectController {
     }
 
     @PostMapping("/project/{projectId}/repository/sonar")
-    public ResponseEntity<String> addSonarRepository(@RequestBody AddSonarRepositoryDTO addSonarRepositoryDTO) {
+    public ResponseEntity<String> addSonarRepository(@RequestBody AddRepositoryDTO addSonarRepositoryDTO) {
         try {
             if (repositoryService.checkSonarURL(addSonarRepositoryDTO.getRepositoryURL())) {
                 if (projectService.addSonarRepo(addSonarRepositoryDTO)) {
@@ -92,10 +92,10 @@ public class ProjectController {
     }
 
     @PostMapping("/project/{projectId}/repository/github")
-    public ResponseEntity<String> addGitHubRepository(@RequestBody AddGithubRepositoryDTO addGithubRepositoryDTO) {
+    public ResponseEntity<String> addGitHubRepository(@RequestBody AddRepositoryDTO addRepositoryDTO) {
         try {
-            if (repositoryService.checkGithubURL(addGithubRepositoryDTO.getRepositoryURL())) {
-                if (projectService.addGithubRepo(addGithubRepositoryDTO)) {
+            if (repositoryService.checkGithubURL(addRepositoryDTO.getRepositoryURL())) {
+                if (projectService.addGithubRepo(addRepositoryDTO)) {
                     return ResponseEntity.status(HttpStatus.OK).body(successMessage);
                 }
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failMessage);
@@ -107,7 +107,7 @@ public class ProjectController {
     }
 
     @PostMapping("/project/{projectId}/repository/gitlab")
-    public ResponseEntity<String> addGitLabRepository(@RequestBody AddGitLabRepositoryDTO addGitLabRepositoryDTO) {
+    public ResponseEntity<String> addGitLabRepository(@RequestBody AddRepositoryDTO addGitLabRepositoryDTO) {
         try {
             if (repositoryService.checkGitLabURL(addGitLabRepositoryDTO.getRepositoryURL())) {
                 if (projectService.addGitLabRepo(addGitLabRepositoryDTO)) {
@@ -124,7 +124,7 @@ public class ProjectController {
     }
 
     @PostMapping("/project/{projectId}/repository/trello")
-    public ResponseEntity<String> addTrelloBoard(@RequestBody AddTrelloBoardDTO addTrelloBoardDTO) {
+    public ResponseEntity<String> addTrelloBoard(@RequestBody AddRepositoryDTO addTrelloBoardDTO) {
         try {
             if (repositoryService.checkTrelloURL(addTrelloBoardDTO.getRepositoryURL())) {
                 if (projectService.addTrelloBoard(addTrelloBoardDTO)) {

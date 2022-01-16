@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pvs.app.dto.GithubCommitDTO;
+import pvs.app.dto.CommitDTO;
 import pvs.app.dto.GithubIssueDTO;
 import pvs.app.dto.GithubPullRequestDTO;
 import pvs.app.service.GithubApiService;
@@ -36,7 +36,7 @@ public class GithubApiController {
     @PostMapping("/github/commits/{repoOwner}/{repoName}")
     public ResponseEntity<String> postCommits(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
         boolean callAPISuccess;
-        GithubCommitDTO githubCommitDTO = githubCommitService.getLastCommit(repoOwner, repoName);
+        CommitDTO githubCommitDTO = githubCommitService.getLastCommit(repoOwner, repoName);
         final Date lastUpdate = githubCommitDTO == null ? Date.from(Instant.ofEpochSecond(0)) : githubCommitDTO.getCommittedDate();
 
         try {
@@ -61,7 +61,7 @@ public class GithubApiController {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        List<GithubCommitDTO> githubCommitDTOs = githubCommitService.getAllCommits(repoOwner, repoName);
+        List<CommitDTO> githubCommitDTOs = githubCommitService.getAllCommits(repoOwner, repoName);
 
         String githubCommitDTOsJson;
 
@@ -78,7 +78,7 @@ public class GithubApiController {
 
     @GetMapping("/github/branchList/{repoOwner}/{repoName}")
     public ResponseEntity<List<String>> getBranchList(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) {
-        GithubCommitDTO githubCommitDTO = githubCommitService.getLastCommit(repoOwner, repoName);
+        CommitDTO githubCommitDTO = githubCommitService.getLastCommit(repoOwner, repoName);
         final Date lastUpdate = githubCommitDTO == null ? Date.from(Instant.ofEpochSecond(0)) : githubCommitDTO.getCommittedDate();
 
         try {
@@ -96,7 +96,7 @@ public class GithubApiController {
     @GetMapping("/github/commits")
     public ResponseEntity<String> getCommitsOfBranch(@RequestParam("repoOwner") String repoOwner, @RequestParam("repoName") String repoName, @RequestParam("branchName") String branchName) {
         ObjectMapper objectMapper = new ObjectMapper();
-        List<GithubCommitDTO> githubCommitDTOS = this.githubCommitService.getCommitsOfSpecificBranch(repoOwner, repoName, branchName);
+        List<CommitDTO> githubCommitDTOS = this.githubCommitService.getCommitsOfSpecificBranch(repoOwner, repoName, branchName);
         try {
             String githubCommitDTOsJson = objectMapper.writeValueAsString(githubCommitDTOS);
             return ResponseEntity.status(HttpStatus.OK)

@@ -3,7 +3,7 @@ package pvs.app.service.thread;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.gitlab4j.api.models.CommitStats;
 import org.gitlab4j.api.utils.JacksonJson;
-import pvs.app.dto.GitLabCommitDTO;
+import pvs.app.dto.CommitDTO;
 import pvs.app.service.GitLabCommitService;
 
 import java.io.IOException;
@@ -35,23 +35,23 @@ public class GitLabCommitLoaderThread extends Thread {
         try {
             JsonNode commitJsonNode = jacksonJson.readTree(responseJson);
 
-            GitLabCommitDTO gitLabCommitDTO = new GitLabCommitDTO();
-            gitLabCommitDTO.setRepoOwner(repoOwner);
-            gitLabCommitDTO.setRepoName(repoName);
-            gitLabCommitDTO.setBranchName(branchName);
-            gitLabCommitDTO.setAuthorName(String.valueOf(commitJsonNode.get("authorName")));
-            gitLabCommitDTO.setAuthorEmail(String.valueOf(commitJsonNode.get("authorEmail")));
-            gitLabCommitDTO.setAdditions(commitStats.getAdditions());
-            gitLabCommitDTO.setDeletions(commitStats.getDeletions());
-            gitLabCommitDTO.setChangeFiles(changeFileCount);
-            gitLabCommitDTO.setCommittedDate(commitJsonNode.get("committedDate"));
-            gitLabCommitDTO.setAuthor(Optional.ofNullable(commitJsonNode.get("authorName")));
-            if (this.gitLabCommitService.checkIfExist(gitLabCommitDTO)) {
+            CommitDTO commitDTO = new CommitDTO();
+            commitDTO.setRepoOwner(repoOwner);
+            commitDTO.setRepoName(repoName);
+            commitDTO.setBranchName(branchName);
+            commitDTO.setAuthorName(String.valueOf(commitJsonNode.get("authorName")));
+            commitDTO.setAuthorEmail(String.valueOf(commitJsonNode.get("authorEmail")));
+            commitDTO.setAdditions(commitStats.getAdditions());
+            commitDTO.setDeletions(commitStats.getDeletions());
+            commitDTO.setChangeFiles(changeFileCount);
+            commitDTO.setCommittedDate(commitJsonNode.get("committedDate"));
+            commitDTO.setAuthor(Optional.ofNullable(commitJsonNode.get("authorName")));
+            if (this.gitLabCommitService.checkIfExist(commitDTO)) {
                 Thread.currentThread().interrupt();
             } else {
                 System.out.println("---------------------------inserting");
                 synchronized (lock) {
-                    gitLabCommitService.save(gitLabCommitDTO);
+                    gitLabCommitService.save(commitDTO);
                 }
                 System.out.println("---------------------------complete");
             }

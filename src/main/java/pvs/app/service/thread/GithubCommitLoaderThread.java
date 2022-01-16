@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import pvs.app.dto.GithubCommitDTO;
+import pvs.app.dto.CommitDTO;
 import pvs.app.service.GithubCommitService;
 
 import java.io.IOException;
@@ -75,7 +75,7 @@ public class GithubCommitLoaderThread extends Thread {
                     .map(hist -> hist.get("nodes"));
 
             commits.ifPresent(jsonNode -> jsonNode.forEach(entity -> {
-                GithubCommitDTO githubCommitDTO = new GithubCommitDTO();
+                CommitDTO githubCommitDTO = new CommitDTO();
                 githubCommitDTO.setRepoOwner(repoOwner);
                 githubCommitDTO.setRepoName(repoName);
                 githubCommitDTO.setBranchName(branchName);

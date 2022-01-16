@@ -1,28 +1,28 @@
 package pvs.app.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
-import java.util.TimeZone;
 
-@Data
-public class GithubCommitDTO {
+@Getter
+@Setter
+@RequiredArgsConstructor
+public class CommitDTO {
     private String repoOwner;
     private String repoName;
+    private String branchName;
     private Date committedDate;
     private int additions;
     private int deletions;
     private int changeFiles;
     private String authorName;
     private String authorEmail;
-    private String branchName;
 
 
     public void setCommittedDate(Date committedDate) {
@@ -40,15 +40,5 @@ public class GithubCommitDTO {
         DateTimeFormatter isoParser = ISODateTimeFormat.dateTimeNoMillis();
         this.committedDate =
                 isoParser.parseDateTime(committedDate.toString().replace("\"", "")).toDate();
-    }
-
-    public String getAddSecondsToCommittedDateISOString(int seconds) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(this.committedDate);
-        calendar.add(Calendar.SECOND, seconds);
-        TimeZone tz = TimeZone.getDefault();
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
-        df.setTimeZone(tz);
-        return df.format(calendar.getTime());
     }
 }

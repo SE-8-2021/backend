@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pvs.app.dto.GitLabCommitDTO;
+import pvs.app.dto.CommitDTO;
 import pvs.app.dto.GitLabIssueDTO;
 import pvs.app.service.GitLabApiService;
 import pvs.app.service.GitLabCommitService;
@@ -35,10 +35,10 @@ public class GitLabApiController {
     @GetMapping("/gitlab/commits/{repoOwner}/{repoName}")
     public ResponseEntity<String> getCommits(@PathVariable("repoOwner") String repoOwner, @PathVariable("repoName") String repoName) throws GitLabApiException {
         ObjectMapper objectMapper = new ObjectMapper();
-        List<GitLabCommitDTO> gitLabCommitDTOS = gitLabCommitService.getAllCommits(repoOwner, repoName);
+        List<CommitDTO> commitDTOS = gitLabCommitService.getAllCommits(repoOwner, repoName);
 
         try {
-            String gitlabCommitDTOsJson = objectMapper.writeValueAsString(gitLabCommitDTOS);
+            String gitlabCommitDTOsJson = objectMapper.writeValueAsString(commitDTOS);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(gitlabCommitDTOsJson);
         } catch (JsonProcessingException e) {
@@ -118,9 +118,9 @@ public class GitLabApiController {
     @GetMapping("/gitlab/commits")
     public ResponseEntity<String> getCommitsOfBranch(@RequestParam("repoOwner") String repoOwner, @RequestParam("repoName") String repoName, @RequestParam("branchName") String branchName) {
         ObjectMapper objectMapper = new ObjectMapper();
-        List<GitLabCommitDTO> gitLabCommitDTOS = this.gitLabCommitService.getCommitsOfSpecificBranch(repoOwner, repoName, branchName);
+        List<CommitDTO> commitDTOS = this.gitLabCommitService.getCommitsOfSpecificBranch(repoOwner, repoName, branchName);
         try {
-            String gitLabCommitDTOsJson = objectMapper.writeValueAsString(gitLabCommitDTOS);
+            String gitLabCommitDTOsJson = objectMapper.writeValueAsString(commitDTOS);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(gitLabCommitDTOsJson);
         } catch (JsonProcessingException e) {
