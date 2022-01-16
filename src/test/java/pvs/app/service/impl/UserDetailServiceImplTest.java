@@ -17,9 +17,6 @@ import org.springframework.util.DigestUtils;
 import pvs.app.Application;
 import pvs.app.dao.MemberDAO;
 import pvs.app.entity.Member;
-import pvs.app.entity.Role;
-
-import java.util.Set;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -39,14 +36,10 @@ public class UserDetailServiceImplTest {
         this.userDetailsServiceImpl = new UserDetailsServiceImpl(mockMemberDAO);
 
         member = new Member();
-        Role userRole = new Role();
-        userRole.setRoleId(1L);
-        userRole.setName("USER");
 
         member.setMemberId(1L);
         member.setUsername("test");
         member.setPassword(DigestUtils.md5DigestAsHex("test".getBytes()));
-        member.setAuthorities(Set.of(userRole));
     }
 
     @Test
