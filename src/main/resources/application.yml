@@ -26,6 +26,7 @@ spring:
     username: ${PVS_DB_USER}
     password: ${PVS_DB_PASS}
     driver-class-name: org.postgresql.Driver
+
   jpa:
     properties:
       hibernate:
@@ -38,4 +39,3 @@ spring:
       ddl-auto: update
   jackson:
     time-zone: Asia/Taipei
-
