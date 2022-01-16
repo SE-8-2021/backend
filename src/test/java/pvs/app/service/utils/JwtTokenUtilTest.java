@@ -11,11 +11,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.DigestUtils;
 import pvs.app.Application;
 import pvs.app.entity.Member;
-import pvs.app.entity.Role;
 import pvs.app.utils.JwtTokenUtil;
 
 import java.io.IOException;
-import java.util.Set;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -29,24 +27,16 @@ public class JwtTokenUtilTest {
     @Before
     public void setup() throws IOException {
         memberUser = new Member();
-        Role userRole = new Role();
-        userRole.setRoleId(1L);
-        userRole.setName("USER");
 
         memberUser.setMemberId(1L);
         memberUser.setUsername("user");
         memberUser.setPassword(DigestUtils.md5DigestAsHex("user".getBytes()));
-        memberUser.setAuthorities(Set.of(userRole));
 
         Member memberAdmin = new Member();
-        Role adminRole = new Role();
-        adminRole.setRoleId(2L);
-        adminRole.setName("ADMIN");
 
         memberAdmin.setMemberId(2L);
         memberAdmin.setUsername("admin");
         memberAdmin.setPassword(DigestUtils.md5DigestAsHex("admin".getBytes()));
-        memberAdmin.setAuthorities(Set.of(adminRole));
     }
 
     @Test
